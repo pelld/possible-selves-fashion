@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Possible Selves — an experimental premium fashion-store interface.">
+    <title>Possible Selves</title>
+    <style>
+        /* ============================================================================================================
+           00A. DESIGN TOKENS
+           ============================================================================================================ */
+        :root {
+            --paper: #f8f7f3;
+            --ink: #242421;
+            --muted: #8f8f89;
+            --line: rgba(55, 55, 52, 0.30);
+            --wash: rgba(145, 126, 104, 0);
+            --slow: 1050ms;
+            --quick: 360ms;
+        }
+
+        * { box-sizing: border-box; }
+        html { background: var(--paper); color: var(--ink); font-family: "Helvetica Neue", Arial, sans-serif; }
+        body { min-height: 100vh; margin: 0; overflow-x: hidden; background: radial-gradient(circle at 50% 55%, var(--wash), transparent 42%), var(--paper); transition: background var(--slow) ease; }
+        button, select, textarea, input { font: inherit; }
+        button { color: inherit; }
+        button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+
+        /* ============================================================================================================
+           01A. BRAND FRAME
+           ============================================================================================================ */
+        header { position: fixed; z-index: 30; inset: 0 0 auto 0; display: flex; min-height: 76px; align-items: center; justify-content: space-between; padding: 20px 28px; pointer-events: none; }
+        header > * { pointer-events: auto; }
+        .brand { display: grid; padding: 0; border: 0; background: transparent; color: rgba(40,40,38,.43); font-size: 10px; letter-spacing: .25em; line-height: 1.25; text-align: left; cursor: pointer; }
+        .header-actions { display: flex; gap: 18px; }
+        .quiet { padding: 7px 0; border: 0; border-bottom: 1px solid transparent; background: transparent; color: rgba(40,40,38,.58); font-size: 11px; letter-spacing: .11em; text-transform: uppercase; cursor: pointer; }
+        .quiet:hover { border-bottom-color: currentColor; color: var(--ink); }
+
+        /* ============================================================================================================
+           02A. COMMON SCREEN STRUCTURE
+           ============================================================================================================ */
+        .screen { display: none; min-height: 100vh; padding: 100px 28px 28px; }
+        .screen.active { display: grid; animation: fade-in 800ms ease both; }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        .copy { text-align: center; }
+        .eyebrow { margin: 0 0 10px; color: var(--muted); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+        h1, h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-weight: 400; }
+        h1 { margin-inline: auto; max-width: 820px; font-size: clamp(31px, 5vw, 66px); line-height: .98; }
+        h2 { font-size: clamp(28px, 4vw, 44px); line-height: 1.04; }
+        .instruction { margin: 17px 0 0; color: var(--muted); font-family: Georgia, "Times New Roman", serif; font-size: 15px; font-style: italic; }
+
+        /* ============================================================================================================
+           03A. OPENING — PEOPLE BEFORE PRODUCTS
+           ============================================================================================================ */
+        #opening { grid-template-rows: minmax(155px,.6fr) minmax(400px,1fr); }
+        #opening .copy { align-self: end; }
+        .character-grid { display: grid; width: min(1120px,100%); align-self: center; justify-self: center; grid-template-columns: repeat(4,minmax(120px,1fr)); gap: clamp(6px,3vw,44px); }
+        .character { position: relative; display: grid; min-height: 400px; place-items: end center; padding: 0 0 28px; border: 0; background: transparent; cursor: pointer; }
+        .character-label { z-index: 3; color: rgba(45,45,43,.48); font-size: 11px; letter-spacing: .13em; text-transform: uppercase; transition: color var(--quick) ease; }
+        .outline-person { position: absolute; top: 25px; left: 50%; width: 122px; height: 310px; transform: translateX(-50%); filter: blur(.75px); opacity: .53; transition: filter 700ms ease, opacity 700ms ease, transform 900ms cubic-bezier(.22,1,.36,1); }
+        .outline-person.child { top: 77px; transform: translateX(-50%) scale(.82); transform-origin: bottom center; }
+        .outline-person span { position: absolute; display: block; border: 1.55px solid rgba(60,60,56,.54); background: rgba(255,255,255,.05); }
+        .head { top: 0; left: 44px; width: 34px; height: 42px; border-radius: 48%; }
+        .torso { top: 51px; left: 31px; width: 60px; height: 131px; border-radius: 45% 45% 25% 25% / 24% 24% 18% 18%; }
+        .arm { top: 59px; width: 18px; height: 139px; border-radius: 50%; }
+        .arm.left { left: 13px; transform: rotate(5deg); }
+        .arm.right { right: 13px; transform: rotate(-5deg); }
+        .leg { top: 173px; width: 23px; height: 136px; border-radius: 32% 32% 45% 45%; }
+        .leg.left { left: 33px; }
+        .leg.right { right: 33px; }
+        .character:hover .outline-person, .character:focus-visible .outline-person { filter: blur(0); opacity: 1; transform: translateX(-50%) translateY(-11px); }
+        .character:hover .outline-person.child, .character:focus-visible .outline-person.child { transform: translateX(-50%) translateY(-11px) scale(.82); }
+        .character:hover .character-label, .character:focus-visible .character-label { color: var(--ink); }
+
+        /* ============================================================================================================
+           04A. DRESSING ROOM
+           ============================================================================================================ */
+        #dressing { grid-template-rows: auto 1fr; gap: 6px; }
+        #dressing h1 { font-size: clamp(29px,4.2vw,56px); }
+        .stage { position: relative; display: grid; min-height: 620px; place-items: center; }
+        .single { position: relative; width: min(390px,90vw); height: 545px; transition: opacity var(--quick) ease, transform var(--slow) cubic-bezier(.22,1,.36,1); }
+        .single.leaving { opacity: 0; transform: scale(.985); }
+        .body-shell { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; }
+        .person-canvas, .choice-canvas { position: absolute; inset: 12px 45px 40px; }
+        .person-canvas::before, .choice-canvas::before { position: absolute; inset: 0; border: 1.65px solid rgba(68,68,64,.34); border-radius: 48% 48% 36% 36% / 12% 12% 7% 7%; content: ""; clip-path: polygon(43% 0,57% 0,62% 8%,66% 21%,84% 27%,78% 53%,68% 47%,66% 100%,53% 100%,50% 58%,47% 100%,34% 100%,32% 47%,22% 53%,16% 27%,34% 21%,38% 8%); filter: blur(.45px); }
+        .person-canvas::after, .choice-canvas::after { position: absolute; top: 0; left: 50%; width: 52px; height: 60px; transform: translateX(-50%); border: 1.65px solid rgba(68,68,64,.34); border-radius: 48%; content: ""; filter: blur(.45px); }
+        .zones { position: absolute; inset: 0; z-index: 9; }
+        .zone { position: absolute; left: 50%; display: grid; width: 142px; place-items: center; transform: translateX(-50%); border: 1px solid transparent; border-radius: 999px; background: transparent; color: transparent; cursor: pointer; transition: border-color var(--quick) ease, color var(--quick) ease, background var(--quick) ease; }
+        .zone span { padding: 4px 10px; border-radius: 999px; background: rgba(248,247,243,.92); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+        .zone:hover { border-color: rgba(55,55,52,.22); background: rgba(255,255,255,.19); color: rgba(40,40,38,.72); }
+        .zone[data-zone="accessories"] { top: 20px; height: 78px; }
+        .zone[data-zone="outer"] { top: 103px; width: 210px; height: 188px; }
+        .zone[data-zone="top"] { top: 123px; height: 126px; }
+        .zone[data-zone="whole"] { top: 108px; left: calc(50% + 126px); width: 82px; height: 280px; }
+        .zone[data-zone="bottom"] { top: 263px; height: 194px; }
+        .zone[data-zone="shoes"] { top: 449px; width: 174px; height: 70px; }
+        .look-layers { position: absolute; z-index: 5; inset: 12px 45px 40px; pointer-events: none; }
+
+        /* ============================================================================================================
+           05A. GARMENT PLACEHOLDERS
+           These are interaction placeholders. Real cut-out product photography can replace each layer later.
+           ============================================================================================================ */
+        .garment { position: absolute; display: block; background: linear-gradient(145deg,rgba(255,255,255,.18),transparent 42%), var(--colour); box-shadow: inset 0 0 0 1px rgba(255,255,255,.15), inset 0 -18px 35px rgba(0,0,0,.08); }
+        .garment::after { position: absolute; inset: 0; background-image: repeating-linear-gradient(90deg,transparent 0 9px,rgba(255,255,255,.055) 10px); content: ""; mix-blend-mode: soft-light; }
+        .garment.top { z-index: 3; top: 82px; left: 50%; width: 132px; height: 151px; transform: translateX(-50%); border-radius: 24px 24px 15px 15px; clip-path: polygon(20% 0,37% 0,42% 11%,58% 11%,63% 0,80% 0,100% 22%,85% 40%,76% 29%,74% 100%,26% 100%,24% 29%,15% 40%,0 22%); }
+        .garment.outer { z-index: 4; top: 70px; left: 50%; width: 176px; height: 225px; transform: translateX(-50%); border-radius: 28px 28px 12px 12px; clip-path: polygon(28% 0,43% 0,50% 10%,57% 0,72% 0,100% 18%,86% 46%,78% 36%,73% 100%,27% 100%,22% 36%,14% 46%,0 18%); }
+        .garment.bottom { z-index: 2; top: 218px; left: 50%; width: 112px; height: 232px; transform: translateX(-50%); border-radius: 10px 10px 22px 22px; clip-path: polygon(0 0,100% 0,91% 100%,58% 100%,50% 34%,42% 100%,9% 100%); }
+        .garment.shoes { z-index: 5; top: 451px; left: 50%; width: 128px; height: 38px; transform: translateX(-50%); border-radius: 46% 18% 18% 26% / 58% 30% 30% 42%; clip-path: polygon(0 35%,24% 15%,45% 45%,67% 16%,100% 55%,100% 100%,55% 100%,50% 70%,45% 100%,0 100%); }
+        .garment.accessories { z-index: 6; top: 47px; left: 50%; width: 82px; height: 24px; transform: translateX(-50%); border-radius: 50%; clip-path: polygon(0 34%,37% 14%,50% 0,63% 14%,100% 34%,84% 100%,16% 100%); }
+        .garment.whole { z-index: 3; top: 78px; left: 50%; width: 156px; height: 374px; transform: translateX(-50%); border-radius: 26px 26px 22px 22px; clip-path: polygon(21% 0,39% 0,44% 10%,56% 10%,61% 0,79% 0,100% 20%,84% 36%,75% 29%,92% 100%,8% 100%,25% 29%,16% 36%,0 20%); }
+
+        /* ============================================================================================================
+           06A. FORKED SELF
+           ============================================================================================================ */
+        .fork { display: grid; width: min(940px,100%); min-height: 560px; align-items: center; grid-template-columns: minmax(0,1fr) 64px minmax(0,1fr); gap: 10px; animation: fork-in var(--slow) cubic-bezier(.22,1,.36,1) both; }
+        .fork[hidden] { display: none; }
+        @keyframes fork-in { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+        .possible { position: relative; display: grid; min-height: 550px; place-items: end center; padding: 0 12px 28px; border: 0; background: transparent; cursor: pointer; }
+        .choice-canvas { inset: 4px 34px 60px; transition: filter var(--quick) ease, opacity var(--quick) ease, transform var(--quick) ease; }
+        .possible:hover .choice-canvas { filter: grayscale(.28); opacity: .66; transform: translateY(4px); }
+        .price { position: absolute; bottom: 50px; color: transparent; font-family: Georgia,"Times New Roman",serif; font-size: 16px; transition: color var(--quick) ease; }
+        .possible:hover .price, .possible:focus-visible .price { color: rgba(35,35,33,.68); }
+        .send-back { color: transparent; font-size: 9px; letter-spacing: .15em; text-transform: uppercase; transition: color var(--quick) ease; }
+        .possible:hover .send-back, .possible:focus-visible .send-back { color: var(--ink); }
+        .studio-choice { position: absolute; z-index: 8; top: 20px; left: 50%; transform: translateX(-50%); color: rgba(40,40,38,.65); font-size: 9px; letter-spacing: .17em; text-transform: uppercase; }
+        .studio-choice::before { display: block; width: 26px; height: 1px; margin: 0 auto 8px; background: currentColor; content: ""; }
+        .divider { display: grid; height: 330px; place-items: center; color: rgba(40,40,38,.28); font-family: Georgia,"Times New Roman",serif; font-size: 14px; }
+        .divider::before, .divider::after { width: 1px; height: 124px; background: rgba(55,55,52,.12); content: ""; }
+
+        /* ============================================================================================================
+           07A. COMPLETION AND PANELS
+           ============================================================================================================ */
+        .completion { position: absolute; z-index: 12; bottom: 22px; left: 50%; width: min(600px,calc(100% - 30px)); transform: translateX(-50%); text-align: center; }
+        .completion[hidden] { display: none; }
+        .completion-total { margin: 0 0 17px; color: rgba(35,35,33,.72); font-family: Georgia,"Times New Roman",serif; font-size: 18px; }
+        .completion-buttons { display: flex; justify-content: center; gap: 18px; }
+        .primary { min-height: 46px; padding: 0 22px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+        .primary:hover { background: transparent; color: var(--ink); }
+        dialog { width: min(700px,calc(100% - 28px)); max-height: calc(100vh - 40px); padding: 0; border: 0; background: var(--paper); color: var(--ink); }
+        dialog::backdrop { background: rgba(25,25,24,.24); backdrop-filter: blur(8px); }
+        .panel { padding: 30px; }
+        .panel-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+        .close { padding: 0 4px; border: 0; background: transparent; color: var(--muted); font-size: 30px; line-height: 1; cursor: pointer; }
+        .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+        .notes-grid label { display: grid; gap: 9px; color: rgba(35,35,33,.72); font-size: 12px; letter-spacing: .03em; }
+        .notes-grid label:nth-child(4) { grid-column: span 2; }
+        select, textarea { width: 100%; padding: 12px 0; border: 0; border-bottom: 1px solid rgba(50,50,47,.24); border-radius: 0; background: transparent; color: var(--ink); }
+        input[type="range"] { width: 100%; accent-color: var(--ink); }
+        .range-ends { display: flex; justify-content: space-between; color: var(--muted); font-size: 10px; }
+        .bag-summary { display: grid; gap: 14px; }
+        .bag-row { display: flex; justify-content: space-between; gap: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(50,50,47,.14); }
+        .bag-total { display: flex; justify-content: space-between; margin-top: 8px; font-family: Georgia,"Times New Roman",serif; font-size: 20px; }
+        .prototype-note { margin: 26px 0 0; color: var(--muted); font-size: 11px; }
+
+        /* ============================================================================================================
+           08A. RESPONSIVE
+           ============================================================================================================ */
+        @media (max-width: 760px) {
+            header { padding: 18px; }
+            .screen { padding: 92px 14px 24px; }
+            #opening { grid-template-rows: auto 1fr; gap: 22px; }
+            .character-grid { grid-template-columns: repeat(2,minmax(120px,1fr)); gap: 0; }
+            .character { min-height: 300px; }
+            .outline-person { top: 15px; transform: translateX(-50%) scale(.77); transform-origin: bottom center; }
+            .outline-person.child { top: 57px; transform: translateX(-50%) scale(.64); }
+            .character:hover .outline-person, .character:focus-visible .outline-person { transform: translateX(-50%) translateY(-7px) scale(.77); }
+            .character:hover .outline-person.child, .character:focus-visible .outline-person.child { transform: translateX(-50%) translateY(-7px) scale(.64); }
+            .stage { min-height: 580px; }
+            .fork { min-height: 500px; grid-template-columns: minmax(0,1fr) 22px minmax(0,1fr); gap: 0; }
+            .possible { min-height: 500px; padding-inline: 0; }
+            .choice-canvas { inset: 20px -3px 74px; transform: scale(.82); transform-origin: bottom center; }
+            .divider { height: 255px; }
+            .divider::before, .divider::after { height: 94px; }
+            .notes-grid { grid-template-columns: 1fr; }
+            .notes-grid label:nth-child(4) { grid-column: auto; }
+            .completion-buttons { align-items: center; flex-direction: column; gap: 6px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ================================================================================================================
+         09A. FIXED BRAND FRAME
+         ================================================================================================================ -->
+    <header>
+        <button class="brand" id="reset" type="button" aria-label="Return to the opening screen"><span>POSSIBLE</span><span>SELVES</span></button>
+        <div class="header-actions">
+            <button class="quiet" id="open-notes" type="button">Studio notes</button>
+            <button class="quiet" id="open-look" type="button">Look <span id="look-count">0</span></button>
+        </div>
+    </header>
+
+    <main aria-live="polite">
+        <!-- ============================================================================================================
+             10A. OPENING
+             ============================================================================================================ -->
+        <section class="screen active" id="opening">
+            <div class="copy">
+                <p class="eyebrow">A shop that pays attention</p>
+                <h1>Who are we dressing today?</h1>
+                <p class="instruction">Take your time.</p>
+            </div>
+
+            <div class="character-grid">
+                <button class="character" data-character="man" type="button" aria-label="Dress a man">
+                    <span class="outline-person" aria-hidden="true"><span class="head"></span><span class="torso"></span><span class="arm left"></span><span class="arm right"></span><span class="leg left"></span><span class="leg right"></span></span>
+                    <span class="character-label">Man</span>
+                </button>
+                <button class="character" data-character="woman" type="button" aria-label="Dress a woman">
+                    <span class="outline-person" aria-hidden="true"><span class="head"></span><span class="torso"></span><span class="arm left"></span><span class="arm right"></span><span class="leg left"></span><span class="leg right"></span></span>
+                    <span class="character-label">Woman</span>
+                </button>
+                <button class="character" data-character="boy" type="button" aria-label="Dress a boy">
+                    <span class="outline-person child" aria-hidden="true"><span class="head"></span><span class="torso"></span><span class="arm left"></span><span class="arm right"></span><span class="leg left"></span><span class="leg right"></span></span>
+                    <span class="character-label">Boy</span>
+                </button>
+                <button class="character" data-character="girl" type="button" aria-label="Dress a girl">
+                    <span class="outline-person child" aria-hidden="true"><span class="head"></span><span class="torso"></span><span class="arm left"></span><span class="arm right"></span><span class="leg left"></span><span class="leg right"></span></span>
+                    <span class="character-label">Girl</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ============================================================================================================
+             11A. DRESSING ROOM
+             ============================================================================================================ -->
+        <section class="screen" id="dressing">
+            <div class="copy">
+                <p class="eyebrow" id="dressing-eyebrow">Begin anywhere</p>
+                <h1 id="dressing-title">Choose where the first possibility begins.</h1>
+                <p class="instruction" id="dressing-instruction">Move across the figure, then click a body area.</p>
+            </div>
+
+            <div class="stage">
+                <div class="single" id="single">
+                    <div class="body-shell">
+                        <span class="person-canvas" aria-hidden="true"></span>
+                        <div class="look-layers" id="current-look" aria-label="Current look"></div>
+                        <div class="zones">
+                            <button class="zone" data-zone="accessories" type="button"><span>Accessories</span></button>
+                            <button class="zone" data-zone="outer" type="button"><span>Outer</span></button>
+                            <button class="zone" data-zone="top" type="button"><span>Top</span></button>
+                            <button class="zone" data-zone="whole" type="button"><span>Whole</span></button>
+                            <button class="zone" data-zone="bottom" type="button"><span>Legs</span></button>
+                            <button class="zone" data-zone="shoes" type="button"><span>Shoes</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fork" id="fork" hidden>
+                    <button class="possible" id="left-choice" type="button" aria-label="Send the left possibility back">
+                        <span class="studio-choice" id="left-studio" hidden>Studio choice</span>
+                        <span class="choice-canvas" id="left-canvas" aria-hidden="true"></span>
+                        <span class="price" id="left-price"></span>
+                        <span class="send-back">Send back</span>
+                    </button>
+                    <div class="divider" aria-hidden="true"><span>or</span></div>
+                    <button class="possible" id="right-choice" type="button" aria-label="Send the right possibility back">
+                        <span class="studio-choice" id="right-studio" hidden>Studio choice</span>
+                        <span class="choice-canvas" id="right-canvas" aria-hidden="true"></span>
+                        <span class="price" id="right-price"></span>
+                        <span class="send-back">Send back</span>
+                    </button>
+                </div>
+
+                <div class="completion" id="completion" hidden>
+                    <p class="completion-total" id="completion-total"></p>
+                    <div class="completion-buttons">
+                        <button class="primary" id="take-look" type="button">Take this look</button>
+                        <button class="quiet" id="keep-exploring" type="button">Keep exploring</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================================================================================================================
+         12A. STUDIO NOTES
+         ================================================================================================================ -->
+    <dialog id="notes-dialog">
+        <form class="panel" method="dialog">
+            <div class="panel-header">
+                <div><p class="eyebrow">A note for the studio</p><h2>What should influence the next possibilities?</h2></div>
+                <button class="close" value="cancel" aria-label="Close studio notes">×</button>
+            </div>
+            <div class="notes-grid">
+                <label>Colours you are drawn to
+                    <select id="colour-note"><option value="open">Surprise me</option><option value="quiet">Quiet and neutral</option><option value="earth">Earth and mineral</option><option value="colour">Confident colour</option><option value="dark">Mostly dark</option></select>
+                </label>
+                <label>How far should we push?
+                    <input id="adventure-note" type="range" min="0" max="100" value="55">
+                    <span class="range-ends"><span>Recognise me</span><span>Challenge me</span></span>
+                </label>
+                <label>Price
+                    <select id="price-note"><option value="style-first">Style first</option><option value="gentle">Keep an eye on the total</option><option value="boundary">Stay within a firm boundary</option></select>
+                </label>
+                <label>Materials or practical requirements
+                    <textarea id="material-note" rows="3" placeholder="For example: no leather, natural fibres, machine washable…"></textarea>
+                </label>
+                <label>Environmental impact
+                    <select id="environment-note"><option value="not-deciding">Not a deciding factor</option><option value="prefer">Prefer lower-impact choices</option><option value="priority">Make it a priority</option></select>
+                </label>
+            </div>
+            <button class="primary" id="save-notes" value="default">Let the studio respond</button>
+        </form>
+    </dialog>
+
+    <!-- ================================================================================================================
+         13A. CHOSEN LOOK PANEL
+         ================================================================================================================ -->
+    <dialog id="look-dialog">
+        <form class="panel" method="dialog">
+            <div class="panel-header">
+                <div><p class="eyebrow">Your chosen self</p><h2>The complete look</h2></div>
+                <button class="close" value="cancel" aria-label="Close chosen look">×</button>
+            </div>
+            <div class="bag-summary" id="bag-summary"></div>
+            <p class="prototype-note">Prototype only. No transaction will take place.</p>
+        </form>
+    </dialog>
+
+    <script>
+        /* ============================================================================================================
+           14A. FICTIONAL PRODUCT DATA
+           ============================================================================================================ */
+        const PRODUCTS = {
+            accessories: [
+                { id: "a1", name: "Folded wool scarf", price: 95, colour: "#9a493f", expressive: 58, structured: 34, natural: 82 },
+                { id: "a2", name: "Soft merino collar", price: 120, colour: "#cbc0aa", expressive: 26, structured: 51, natural: 91 },
+                { id: "a3", name: "Mineral cap", price: 85, colour: "#636a62", expressive: 42, structured: 64, natural: 65 },
+                { id: "a4", name: "Ink silk square", price: 110, colour: "#343942", expressive: 48, structured: 70, natural: 54 }
+            ],
+            top: [
+                { id: "t1", name: "Chalk brushed shirt", price: 185, colour: "#d7d1c5", expressive: 28, structured: 68, natural: 74 },
+                { id: "t2", name: "Burnt sienna knit", price: 220, colour: "#a6523d", expressive: 67, structured: 39, natural: 88 },
+                { id: "t3", name: "Night ribbed jersey", price: 195, colour: "#30343b", expressive: 36, structured: 57, natural: 70 },
+                { id: "t4", name: "Moss open-collar shirt", price: 210, colour: "#6f7768", expressive: 49, structured: 52, natural: 79 }
+            ],
+            outer: [
+                { id: "o1", name: "Graphite field coat", price: 590, colour: "#45494b", expressive: 44, structured: 82, natural: 67 },
+                { id: "o2", name: "Ochre sculpted jacket", price: 640, colour: "#bd8242", expressive: 78, structured: 74, natural: 63 },
+                { id: "o3", name: "Stone wrap coat", price: 690, colour: "#aaa292", expressive: 42, structured: 61, natural: 86 },
+                { id: "o4", name: "Pine cropped shell", price: 560, colour: "#435f53", expressive: 63, structured: 70, natural: 58 }
+            ],
+            bottom: [
+                { id: "b1", name: "Ink pleated trouser", price: 260, colour: "#343942", expressive: 39, structured: 83, natural: 61 },
+                { id: "b2", name: "Clay wide trouser", price: 285, colour: "#a96e54", expressive: 68, structured: 55, natural: 75 },
+                { id: "b3", name: "Mineral taper trouser", price: 275, colour: "#72736d", expressive: 32, structured: 75, natural: 66 },
+                { id: "b4", name: "Deep green soft trouser", price: 295, colour: "#3f554c", expressive: 53, structured: 48, natural: 82 }
+            ],
+            shoes: [
+                { id: "s1", name: "Ivory low trainer", price: 210, colour: "#d8d2c4", expressive: 30, structured: 56, natural: 44 },
+                { id: "s2", name: "Oxide leather shoe", price: 330, colour: "#7c4337", expressive: 61, structured: 79, natural: 36 },
+                { id: "s3", name: "Graphite technical shoe", price: 285, colour: "#41454c", expressive: 47, structured: 74, natural: 28 },
+                { id: "s4", name: "Moss suede runner", price: 260, colour: "#66705e", expressive: 55, structured: 45, natural: 52 }
+            ],
+            whole: [
+                { id: "w1", name: "Quiet mineral set", price: 735, colour: "#817f77", expressive: 40, structured: 77, natural: 72 },
+                { id: "w2", name: "Sienna long silhouette", price: 790, colour: "#99513f", expressive: 79, structured: 59, natural: 78 },
+                { id: "w3", name: "Night column set", price: 760, colour: "#30343b", expressive: 52, structured: 84, natural: 62 },
+                { id: "w4", name: "Pine fluid set", price: 745, colour: "#455c52", expressive: 60, structured: 48, natural: 86 }
+            ]
+        };
+
+        /* ============================================================================================================
+           15A. STATE AND REFERENCES
+           ============================================================================================================ */
+        const state = {
+            character: null,
+            selected: {},
+            zone: null,
+            options: [],
+            decisions: 0,
+            history: [],
+            profile: { expressive: 50, structured: 50, natural: 50 },
+            notes: { colour: "open", adventure: 55, price: "style-first", material: "", environment: "not-deciding" }
+        };
+
+        const opening = document.querySelector("#opening");
+        const dressing = document.querySelector("#dressing");
+        const single = document.querySelector("#single");
+        const currentLook = document.querySelector("#current-look");
+        const fork = document.querySelector("#fork");
+        const leftChoice = document.querySelector("#left-choice");
+        const rightChoice = document.querySelector("#right-choice");
+        const leftCanvas = document.querySelector("#left-canvas");
+        const rightCanvas = document.querySelector("#right-canvas");
+        const leftPrice = document.querySelector("#left-price");
+        const rightPrice = document.querySelector("#right-price");
+        const leftStudio = document.querySelector("#left-studio");
+        const rightStudio = document.querySelector("#right-studio");
+        const completion = document.querySelector("#completion");
+        const completionTotal = document.querySelector("#completion-total");
+        const title = document.querySelector("#dressing-title");
+        const eyebrow = document.querySelector("#dressing-eyebrow");
+        const instruction = document.querySelector("#dressing-instruction");
+        const notesDialog = document.querySelector("#notes-dialog");
+        const lookDialog = document.querySelector("#look-dialog");
+        const bagSummary = document.querySelector("#bag-summary");
+
+        /* ============================================================================================================
+           16A. OPENING AND BODY NAVIGATION
+           ============================================================================================================ */
+        document.querySelectorAll(".character").forEach((button) => {
+            button.addEventListener("click", () => {
+                state.character = button.dataset.character;
+                opening.classList.remove("active");
+                dressing.classList.add("active");
+                renderCurrent();
+            });
+        });
+
+        document.querySelectorAll(".zone").forEach((button) => {
+            button.addEventListener("click", () => openFork(button.dataset.zone));
+        });
+
+        /* ============================================================================================================
+           17A. STYLIST LOGIC — ONE RECOGNISES, ONE CHALLENGES
+           ============================================================================================================ */
+        function score(product, direction) {
+            const profileDistance = Math.abs(product.expressive - state.profile.expressive) + Math.abs(product.structured - state.profile.structured) + Math.abs(product.natural - state.profile.natural);
+            const challengeTarget = Math.min(100, state.profile.expressive + 12 + Number(state.notes.adventure) * 0.18);
+            const challengeDistance = Math.abs(product.expressive - challengeTarget) + Math.abs(product.structured - (100 - state.profile.structured * 0.25)) + Math.abs(product.natural - state.profile.natural);
+            let value = direction === "recognise" ? -profileDistance : -challengeDistance;
+
+            if (state.notes.environment === "prefer") value += product.natural * 0.18;
+            if (state.notes.environment === "priority") value += product.natural * 0.42;
+
+            const colourBias = {
+                quiet: ["#d7d1c5", "#cbc0aa", "#aaa292", "#817f77"],
+                earth: ["#a6523d", "#bd8242", "#a96e54", "#66705e", "#455c52"],
+                colour: ["#a6523d", "#bd8242", "#99513f", "#9a493f"],
+                dark: ["#30343b", "#343942", "#45494b", "#41454c"]
+            };
+
+            if (colourBias[state.notes.colour]?.includes(product.colour)) value += 34;
+            if (state.history.some((item) => item.id === product.id)) value -= 400;
+            return value;
+        }
+
+        function chooseOptions(zone) {
+            const products = PRODUCTS[zone];
+            const recognise = [...products].sort((a,b) => score(b,"recognise") - score(a,"recognise"))[0];
+            const challenge = [...products].filter((item) => item.id !== recognise.id).sort((a,b) => score(b,"challenge") - score(a,"challenge"))[0];
+            return Math.random() > 0.5 ? [recognise,challenge] : [challenge,recognise];
+        }
+
+        function studioIndex(options) {
+            const scores = options.map((product) => score(product,"challenge"));
+            return scores[0] >= scores[1] ? 0 : 1;
+        }
+
+        /* ============================================================================================================
+           18A. THE FORK
+           ============================================================================================================ */
+        function openFork(zone) {
+            state.zone = zone;
+            state.options = chooseOptions(zone);
+            renderChoice(leftCanvas,state.options[0],zone);
+            renderChoice(rightCanvas,state.options[1],zone);
+            leftPrice.textContent = `${money(totalWith(state.options[0],zone))} as shown`;
+            rightPrice.textContent = `${money(totalWith(state.options[1],zone))} as shown`;
+
+            const recommendation = state.decisions >= 2 ? studioIndex(state.options) : -1;
+            leftStudio.hidden = recommendation !== 0;
+            rightStudio.hidden = recommendation !== 1;
+            completion.hidden = true;
+            single.classList.add("leaving");
+
+            window.setTimeout(() => {
+                single.hidden = true;
+                single.classList.remove("leaving");
+                fork.hidden = false;
+            }, state.decisions === 0 ? 700 : 290);
+
+            eyebrow.textContent = state.decisions >= 2 ? "The studio has an opinion" : "Two possible selves";
+            title.textContent = "Which one should go back?";
+            instruction.textContent = "Click the possibility you want to dismiss.";
+        }
+
+        leftChoice.addEventListener("click", () => dismiss(0));
+        rightChoice.addEventListener("click", () => dismiss(1));
+
+        function dismiss(index) {
+            const survivorIndex = index === 0 ? 1 : 0;
+            const survivor = state.options[survivorIndex];
+            const zone = state.zone;
+            state.selected[zone] = survivor;
+            state.decisions += 1;
+            state.history.push(survivor);
+
+            if (zone === "whole") {
+                delete state.selected.top;
+                delete state.selected.outer;
+                delete state.selected.bottom;
+            } else if (["top","outer","bottom"].includes(zone)) {
+                delete state.selected.whole;
+            }
+
+            learn(survivor);
+            applyAtmosphere(survivor.colour);
+
+            const dismissedButton = index === 0 ? leftChoice : rightChoice;
+            const survivorButton = survivorIndex === 0 ? leftChoice : rightChoice;
+            dismissedButton.animate([{ opacity: 1, transform: "translateX(0) scale(1)" },{ opacity: 0, transform: `translateX(${index === 0 ? "-32px" : "32px"}) scale(.97)` }],{ duration: 610, easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards" });
+            survivorButton.animate([{ transform: "translateX(0) scale(1)" },{ transform: `translateX(${survivorIndex === 0 ? "46%" : "-46%"}) scale(1.02)` }],{ duration: 760, easing: "cubic-bezier(.22,1,.36,1)", fill: "forwards" });
+
+            window.setTimeout(() => {
+                fork.hidden = true;
+                leftChoice.getAnimations().forEach((animation) => animation.cancel());
+                rightChoice.getAnimations().forEach((animation) => animation.cancel());
+                renderCurrent();
+                single.hidden = false;
+                eyebrow.textContent = state.decisions >= 3 ? "The studio is learning" : "A choice remains";
+                title.textContent = complete() ? "This self is taking shape." : "Where should we look next?";
+                instruction.textContent = complete() ? "Take the look, keep exploring, or change any part of it." : "Choose another body area—or revisit the last.";
+                if (complete()) showCompletion();
+            }, 780);
+        }
+
+        function learn(product) {
+            const rate = 0.24;
+            state.profile.expressive += (product.expressive - state.profile.expressive) * rate;
+            state.profile.structured += (product.structured - state.profile.structured) * rate;
+            state.profile.natural += (product.natural - state.profile.natural) * rate;
+        }
+
+        /* ============================================================================================================
+           19A. RENDERING
+           ============================================================================================================ */
+        function garment(zone,product) {
+            const element = document.createElement("span");
+            element.className = `garment ${zone}`;
+            element.style.setProperty("--colour",product.colour);
+            element.title = `${product.name}, ${money(product.price)}`;
+            return element;
+        }
+
+        function renderCurrent() {
+            currentLook.innerHTML = "";
+            Object.entries(state.selected).forEach(([zone,product]) => currentLook.append(garment(zone,product)));
+        }
+
+        function renderChoice(canvas,candidate,zone) {
+            canvas.innerHTML = "";
+            Object.entries(state.selected).forEach(([existingZone,product]) => {
+                if (existingZone !== zone && !(zone === "whole" && ["top","outer","bottom"].includes(existingZone))) canvas.append(garment(existingZone,product));
+            });
+            canvas.append(garment(zone,candidate));
+        }
+
+        function applyAtmosphere(colour) {
+            document.documentElement.style.setProperty("--wash",hexToRgba(colour,.10));
+        }
+
+        function hexToRgba(hex,alpha) {
+            const value = Number.parseInt(hex.replace("#",""),16);
+            return `rgba(${(value >> 16) & 255},${(value >> 8) & 255},${value & 255},${alpha})`;
+        }
+
+        /* ============================================================================================================
+           20A. TOTALS AND COMPLETION
+           ============================================================================================================ */
+        function totalWith(candidate = null,zone = null) {
+            const provisional = { ...state.selected };
+            if (candidate && zone) {
+                provisional[zone] = candidate;
+                if (zone === "whole") { delete provisional.top; delete provisional.outer; delete provisional.bottom; }
+                else if (["top","outer","bottom"].includes(zone)) delete provisional.whole;
+            }
+            return Object.values(provisional).reduce((sum,product) => sum + product.price,0);
+        }
+
+        function money(value) {
+            return new Intl.NumberFormat("en-GB",{ style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(value);
+        }
+
+        function complete() {
+            const core = Boolean(state.selected.whole || (state.selected.top && state.selected.bottom));
+            return core && Boolean(state.selected.shoes);
+        }
+
+        function showCompletion() {
+            completionTotal.textContent = `${money(totalWith())} as shown`;
+            completion.hidden = false;
+        }
+
+        document.querySelector("#keep-exploring").addEventListener("click",() => {
+            completion.hidden = true;
+            eyebrow.textContent = "Another possible self";
+            title.textContent = "Choose the part that should change.";
+            instruction.textContent = "The studio will preserve what is already working.";
+        });
+
+        document.querySelector("#take-look").addEventListener("click",() => {
+            renderBag();
+            lookDialog.showModal();
+            document.querySelector("#look-count").textContent = Object.keys(state.selected).length;
+        });
+
+        /* ============================================================================================================
+           21A. OPTIONAL STUDIO NOTES
+           ============================================================================================================ */
+        document.querySelector("#open-notes").addEventListener("click",() => notesDialog.showModal());
+        document.querySelector("#save-notes").addEventListener("click",() => {
+            state.notes.colour = document.querySelector("#colour-note").value;
+            state.notes.adventure = Number(document.querySelector("#adventure-note").value);
+            state.notes.price = document.querySelector("#price-note").value;
+            state.notes.material = document.querySelector("#material-note").value.trim();
+            state.notes.environment = document.querySelector("#environment-note").value;
+            eyebrow.textContent = "The studio has your note";
+            title.textContent = "We will respond through the next choice.";
+            instruction.textContent = "Nothing has been filtered out. The direction has simply changed.";
+        });
+
+        /* ============================================================================================================
+           22A. LOOK PANEL AND RESET
+           ============================================================================================================ */
+        document.querySelector("#open-look").addEventListener("click",() => { renderBag(); lookDialog.showModal(); });
+
+        function renderBag() {
+            bagSummary.innerHTML = "";
+            const entries = Object.entries(state.selected);
+            if (!entries.length) { bagSummary.innerHTML = "<p>No look has been completed yet.</p>"; return; }
+            entries.forEach(([,product]) => {
+                const row = document.createElement("div");
+                row.className = "bag-row";
+                row.innerHTML = `<span>${product.name}</span><span>${money(product.price)}</span>`;
+                bagSummary.append(row);
+            });
+            const total = document.createElement("div");
+            total.className = "bag-total";
+            total.innerHTML = `<span>As shown</span><span>${money(totalWith())}</span>`;
+            bagSummary.append(total);
+        }
+
+        document.querySelector("#reset").addEventListener("click",() => {
+            state.character = null;
+            state.selected = {};
+            state.zone = null;
+            state.options = [];
+            state.decisions = 0;
+            state.history = [];
+            state.profile = { expressive: 50, structured: 50, natural: 50 };
+            currentLook.innerHTML = "";
+            fork.hidden = true;
+            single.hidden = false;
+            completion.hidden = true;
+            document.querySelector("#look-count").textContent = "0";
+            document.documentElement.style.setProperty("--wash","rgba(145,126,104,0)");
+            dressing.classList.remove("active");
+            opening.classList.add("active");
+        });
+    </script>
+</body>
+</html>
