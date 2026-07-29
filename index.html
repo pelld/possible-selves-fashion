@@ -186,7 +186,10 @@
            ============================================================================================================ */
         header .brand { color: rgba(40,40,38,.20); font-size: 9px; letter-spacing: .20em; }
         #opening { position: relative; grid-template-rows: clamp(155px,24vh,255px) minmax(430px,1fr); padding-top: 8px; overflow: hidden; }
-        .brand-banner { display: flex; width: 100%; align-items: flex-start; justify-content: center; color: rgba(45,45,42,.055); font-family: Didot, "Bodoni MT", "Times New Roman", serif; font-size: clamp(98px,15.4vw,245px); font-weight: 400; letter-spacing: .16em; line-height: .88; white-space: nowrap; user-select: none; transform: translateX(.08em); }
+        .brand-banner { display: block; width: min(1520px, 106vw); height: 100%; justify-self: center; overflow: visible; user-select: none; }
+        .brand-banner path { fill: none; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
+        .brand-banner__outline path { stroke: rgba(58,58,55,.105); stroke-width: 13; }
+        .brand-banner__cutout path { stroke: var(--paper); stroke-width: 7.2; }
         .character-grid { width: min(1220px,100%); min-height: 430px; align-self: stretch; align-items: end; padding: 0 0 18px; gap: clamp(18px,4vw,78px); }
         .character { min-height: 100%; padding: 0 0 30px; }
         .character-label { color: rgba(45,45,43,.50); font-size: 11px; letter-spacing: .16em; }
@@ -208,9 +211,20 @@
         .choice-canvas[data-character="boy"], .choice-canvas[data-character="girl"] { transform: scale(.79); transform-origin: bottom center; }
         .possible:hover .choice-canvas[data-character="boy"], .possible:hover .choice-canvas[data-character="girl"] { transform: scale(.79) translateY(4px); }
 
+
+        /* ============================================================================================================
+           08C. OPTICAL ALIGNMENT — CONSISTENT BASELINES AND LESS SYMBOL-LIKE BODIES
+           ============================================================================================================ */
+        .character--man .outline-person,
+        .character--woman .outline-person { width: min(11.9vw,176px); height: min(30.2vw,408px); }
+        .character--boy .outline-person,
+        .character--girl .outline-person { width: min(9.8vw,144px); height: min(24.8vw,334px); }
+        .character--woman .figure-svg,
+        .character--girl .figure-svg { transform: translateX(-1px); }
+
         @media (max-width: 760px) {
             #opening { grid-template-rows: 122px 1fr; padding-top: 8px; }
-            .brand-banner { font-size: clamp(72px,25vw,126px); letter-spacing: .10em; }
+            .brand-banner { width: 132vw; height: 122px; }
             .character-grid { min-height: 610px; align-items: end; }
             .character { min-height: 300px; }
             .outline-person { bottom: 58px; width: 112px; height: 260px; transform: translateX(-50%); }
@@ -238,35 +252,56 @@
              10A. OPENING
              ============================================================================================================ -->
         <section class="screen active" id="opening">
-            <div class="brand-banner" aria-hidden="true">KOVA</div>
+            <svg class="brand-banner" viewBox="0 0 800 220" preserveAspectRatio="xMidYMid meet" aria-label="KOVA">
+                <g class="brand-banner__outline" aria-hidden="true">
+                    <path d="M72 24 L72 198 M72 116 L158 24 M72 116 L166 198"></path>
+                    <path d="M244 24 H318 Q350 24 350 56 V166 Q350 198 318 198 H244 Q212 198 212 166 V56 Q212 24 244 24 Z"></path>
+                    <path d="M406 24 L474 198 L542 24"></path>
+                    <path d="M584 198 L654 24 L724 198 M614 128 H694"></path>
+                </g>
+                <g class="brand-banner__cutout" aria-hidden="true">
+                    <path d="M72 24 L72 198 M72 116 L158 24 M72 116 L166 198"></path>
+                    <path d="M244 24 H318 Q350 24 350 56 V166 Q350 198 318 198 H244 Q212 198 212 166 V56 Q212 24 244 24 Z"></path>
+                    <path d="M406 24 L474 198 L542 24"></path>
+                    <path d="M584 198 L654 24 L724 198 M614 128 H694"></path>
+                </g>
+            </svg>
 
             <div class="character-grid" aria-label="Choose who to dress">
                 <button class="character character--man" data-character="man" type="button" aria-label="Dress a man">
                     <span class="outline-person outline-person--adult" aria-hidden="true"><svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false">
-        <ellipse class="figure-head" cx="110" cy="45" rx="29" ry="34"></ellipse>
-        <path class="figure-body" d="M82 91 C67 95 60 107 57 125 L44 218 C42 230 48 238 57 239 C66 240 72 234 74 223 L82 161 L82 273 L74 399 C73 412 80 420 91 420 C101 420 107 413 108 400 L111 286 L114 400 C115 413 121 420 131 420 C142 420 149 412 148 399 L140 273 L140 161 L148 223 C150 234 156 240 165 239 C174 238 180 230 178 218 L165 125 C162 107 155 95 140 91 C128 88 119 87 111 87 C103 87 94 88 82 91 Z"></path>
-    </svg></span>
+    <ellipse class="figure-head" cx="110" cy="44" rx="27" ry="33"></ellipse>
+    <path class="figure-body" d="M83 88 C69 92 61 104 58 122 L45 216 C43 229 49 238 59 239 C69 240 75 233 77 222 L85 158 L86 262 C93 270 101 274 110 274 C119 274 127 270 134 262 L135 158 L143 222 C145 233 151 240 161 239 C171 238 177 229 175 216 L162 122 C159 104 151 92 137 88 C124 84 96 84 83 88 Z"></path>
+    <path class="figure-body" d="M86 262 C92 269 99 273 108 274 L107 398 C107 412 101 421 91 421 C80 421 73 413 74 398 L80 278 C80 270 82 265 86 262 Z"></path>
+    <path class="figure-body" d="M112 274 C121 273 128 269 134 262 C138 265 140 270 140 278 L146 398 C147 413 140 421 129 421 C119 421 113 412 113 398 Z"></path>
+</svg></span>
                     <span class="character-label">Man</span>
                 </button>
                 <button class="character character--woman" data-character="woman" type="button" aria-label="Dress a woman">
                     <span class="outline-person outline-person--adult" aria-hidden="true"><svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false">
-        <ellipse class="figure-head" cx="110" cy="45" rx="28" ry="34"></ellipse>
-        <path class="figure-body" d="M87 91 C73 95 65 108 62 126 L49 219 C47 230 52 238 61 239 C70 240 76 234 78 223 L84 160 C84 190 80 226 74 257 C82 271 95 279 105 282 L99 399 C98 412 104 420 115 420 C125 420 131 413 132 400 L135 292 L138 400 C139 413 145 420 155 420 C166 420 172 412 171 399 L165 282 C175 279 188 271 196 257 C190 226 186 190 186 160 L192 223 C194 234 200 240 209 239 C218 238 223 230 221 219 L208 126 C205 108 197 95 183 91 C170 87 156 85 135 85 C114 85 100 87 87 91 Z" transform="translate(-25 0)"></path>
-    </svg></span>
+    <ellipse class="figure-head" cx="110" cy="44" rx="26" ry="33"></ellipse>
+    <path class="figure-body" d="M87 89 C74 93 67 105 64 121 L51 215 C49 228 55 237 64 238 C73 239 79 232 81 221 L87 157 L88 211 C88 229 91 246 96 262 C104 267 116 267 124 262 C129 246 132 229 132 211 L133 157 L139 221 C141 232 147 239 156 238 C165 237 171 228 169 215 L156 121 C153 105 146 93 133 89 C121 85 99 85 87 89 Z"></path>
+    <path class="figure-body" d="M96 262 C100 265 104 267 108 267 L107 398 C107 412 101 421 91 421 C81 421 74 413 75 398 L83 280 C83 271 88 265 96 262 Z"></path>
+    <path class="figure-body" d="M112 267 C116 267 120 265 124 262 C132 265 137 271 137 280 L145 398 C146 413 139 421 129 421 C119 421 113 412 113 398 Z"></path>
+</svg></span>
                     <span class="character-label">Woman</span>
                 </button>
                 <button class="character character--boy" data-character="boy" type="button" aria-label="Dress a boy">
                     <span class="outline-person outline-person--child" aria-hidden="true"><svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false">
-        <ellipse class="figure-head" cx="110" cy="58" rx="32" ry="36"></ellipse>
-        <path class="figure-body" d="M84 108 C70 112 63 124 60 141 L49 230 C48 241 53 248 62 249 C71 250 77 244 79 234 L85 176 L85 274 L79 393 C78 405 85 413 95 413 C105 413 111 406 112 394 L114 291 L117 394 C118 406 124 413 134 413 C144 413 151 405 150 393 L144 274 L144 176 L150 234 C152 244 158 250 167 249 C176 248 181 241 180 230 L169 141 C166 124 159 112 145 108 C132 104 121 103 114 103 C107 103 97 104 84 108 Z"></path>
-    </svg></span>
+    <ellipse class="figure-head" cx="110" cy="57" rx="30" ry="35"></ellipse>
+    <path class="figure-body" d="M86 108 C73 112 66 123 63 139 L52 229 C50 241 56 249 65 250 C74 251 80 244 82 234 L88 176 L89 273 C95 280 102 283 110 283 C118 283 125 280 131 273 L132 176 L138 234 C140 244 146 251 155 250 C164 249 170 241 168 229 L157 139 C154 123 147 112 134 108 C122 104 98 104 86 108 Z"></path>
+    <path class="figure-body" d="M89 273 C94 279 101 282 108 283 L107 394 C107 407 101 415 91 415 C81 415 74 407 75 394 L81 289 C81 281 84 276 89 273 Z"></path>
+    <path class="figure-body" d="M112 283 C119 282 126 279 131 273 C136 276 139 281 139 289 L145 394 C146 407 139 415 129 415 C119 415 113 407 113 394 Z"></path>
+</svg></span>
                     <span class="character-label">Boy</span>
                 </button>
                 <button class="character character--girl" data-character="girl" type="button" aria-label="Dress a girl">
                     <span class="outline-person outline-person--child" aria-hidden="true"><svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false">
-        <ellipse class="figure-head" cx="110" cy="58" rx="31" ry="36"></ellipse>
-        <path class="figure-body" d="M88 108 C75 112 68 124 65 141 L54 230 C53 241 58 248 67 249 C76 250 82 244 84 234 L89 176 C89 205 85 234 80 259 C87 271 98 278 106 280 L101 393 C100 405 106 413 116 413 C126 413 132 406 133 394 L136 294 L139 394 C140 406 146 413 156 413 C166 413 172 405 171 393 L166 280 C174 278 185 271 192 259 C187 234 183 205 183 176 L188 234 C190 244 196 250 205 249 C214 248 219 241 218 230 L207 141 C204 124 197 112 184 108 C171 104 156 103 136 103 C116 103 101 104 88 108 Z" transform="translate(-26 0)"></path>
-    </svg></span>
+    <ellipse class="figure-head" cx="110" cy="57" rx="29" ry="35"></ellipse>
+    <path class="figure-body" d="M89 108 C77 112 70 123 67 139 L56 229 C54 241 60 249 69 250 C78 251 84 244 86 234 L91 176 L92 224 C92 242 95 257 99 271 C105 275 115 275 121 271 C125 257 128 242 128 224 L129 176 L134 234 C136 244 142 251 151 250 C160 249 166 241 164 229 L153 139 C150 123 143 112 131 108 C120 104 100 104 89 108 Z"></path>
+    <path class="figure-body" d="M99 271 C102 273 105 275 108 275 L107 394 C107 407 101 415 91 415 C81 415 74 407 75 394 L83 288 C83 280 89 274 99 271 Z"></path>
+    <path class="figure-body" d="M112 275 C115 275 118 273 121 271 C131 274 137 280 137 288 L145 394 C146 407 139 415 129 415 C119 415 113 407 113 394 Z"></path>
+</svg></span>
                     <span class="character-label">Girl</span>
                 </button>
             </div>
@@ -457,10 +492,10 @@
            ============================================================================================================ */
         function figureMarkup(character) {
             const figures = {
-                man: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"><ellipse class="figure-head" cx="110" cy="45" rx="29" ry="34"></ellipse><path class="figure-body" d="M82 91 C67 95 60 107 57 125 L44 218 C42 230 48 238 57 239 C66 240 72 234 74 223 L82 161 L82 273 L74 399 C73 412 80 420 91 420 C101 420 107 413 108 400 L111 286 L114 400 C115 413 121 420 131 420 C142 420 149 412 148 399 L140 273 L140 161 L148 223 C150 234 156 240 165 239 C174 238 180 230 178 218 L165 125 C162 107 155 95 140 91 C128 88 119 87 111 87 C103 87 94 88 82 91 Z"></path></svg>`,
-                woman: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"><ellipse class="figure-head" cx="110" cy="45" rx="28" ry="34"></ellipse><path class="figure-body" d="M87 91 C73 95 65 108 62 126 L49 219 C47 230 52 238 61 239 C70 240 76 234 78 223 L84 160 C84 190 80 226 74 257 C82 271 95 279 105 282 L99 399 C98 412 104 420 115 420 C125 420 131 413 132 400 L135 292 L138 400 C139 413 145 420 155 420 C166 420 172 412 171 399 L165 282 C175 279 188 271 196 257 C190 226 186 190 186 160 L192 223 C194 234 200 240 209 239 C218 238 223 230 221 219 L208 126 C205 108 197 95 183 91 C170 87 156 85 135 85 C114 85 100 87 87 91 Z" transform="translate(-25 0)"></path></svg>`,
-                boy: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"><ellipse class="figure-head" cx="110" cy="58" rx="32" ry="36"></ellipse><path class="figure-body" d="M84 108 C70 112 63 124 60 141 L49 230 C48 241 53 248 62 249 C71 250 77 244 79 234 L85 176 L85 274 L79 393 C78 405 85 413 95 413 C105 413 111 406 112 394 L114 291 L117 394 C118 406 124 413 134 413 C144 413 151 405 150 393 L144 274 L144 176 L150 234 C152 244 158 250 167 249 C176 248 181 241 180 230 L169 141 C166 124 159 112 145 108 C132 104 121 103 114 103 C107 103 97 104 84 108 Z"></path></svg>`,
-                girl: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"><ellipse class="figure-head" cx="110" cy="58" rx="31" ry="36"></ellipse><path class="figure-body" d="M88 108 C75 112 68 124 65 141 L54 230 C53 241 58 248 67 249 C76 250 82 244 84 234 L89 176 C89 205 85 234 80 259 C87 271 98 278 106 280 L101 393 C100 405 106 413 116 413 C126 413 132 406 133 394 L136 294 L139 394 C140 406 146 413 156 413 C166 413 172 405 171 393 L166 280 C174 278 185 271 192 259 C187 234 183 205 183 176 L188 234 C190 244 196 250 205 249 C214 248 219 241 218 230 L207 141 C204 124 197 112 184 108 C171 104 156 103 136 103 C116 103 101 104 88 108 Z" transform="translate(-26 0)"></path></svg>`
+                man: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"> <ellipse class="figure-head" cx="110" cy="44" rx="27" ry="33"></ellipse> <path class="figure-body" d="M83 88 C69 92 61 104 58 122 L45 216 C43 229 49 238 59 239 C69 240 75 233 77 222 L85 158 L86 262 C93 270 101 274 110 274 C119 274 127 270 134 262 L135 158 L143 222 C145 233 151 240 161 239 C171 238 177 229 175 216 L162 122 C159 104 151 92 137 88 C124 84 96 84 83 88 Z"></path> <path class="figure-body" d="M86 262 C92 269 99 273 108 274 L107 398 C107 412 101 421 91 421 C80 421 73 413 74 398 L80 278 C80 270 82 265 86 262 Z"></path> <path class="figure-body" d="M112 274 C121 273 128 269 134 262 C138 265 140 270 140 278 L146 398 C147 413 140 421 129 421 C119 421 113 412 113 398 Z"></path> </svg>`,
+                woman: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"> <ellipse class="figure-head" cx="110" cy="44" rx="26" ry="33"></ellipse> <path class="figure-body" d="M87 89 C74 93 67 105 64 121 L51 215 C49 228 55 237 64 238 C73 239 79 232 81 221 L87 157 L88 211 C88 229 91 246 96 262 C104 267 116 267 124 262 C129 246 132 229 132 211 L133 157 L139 221 C141 232 147 239 156 238 C165 237 171 228 169 215 L156 121 C153 105 146 93 133 89 C121 85 99 85 87 89 Z"></path> <path class="figure-body" d="M96 262 C100 265 104 267 108 267 L107 398 C107 412 101 421 91 421 C81 421 74 413 75 398 L83 280 C83 271 88 265 96 262 Z"></path> <path class="figure-body" d="M112 267 C116 267 120 265 124 262 C132 265 137 271 137 280 L145 398 C146 413 139 421 129 421 C119 421 113 412 113 398 Z"></path> </svg>`,
+                boy: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"> <ellipse class="figure-head" cx="110" cy="57" rx="30" ry="35"></ellipse> <path class="figure-body" d="M86 108 C73 112 66 123 63 139 L52 229 C50 241 56 249 65 250 C74 251 80 244 82 234 L88 176 L89 273 C95 280 102 283 110 283 C118 283 125 280 131 273 L132 176 L138 234 C140 244 146 251 155 250 C164 249 170 241 168 229 L157 139 C154 123 147 112 134 108 C122 104 98 104 86 108 Z"></path> <path class="figure-body" d="M89 273 C94 279 101 282 108 283 L107 394 C107 407 101 415 91 415 C81 415 74 407 75 394 L81 289 C81 281 84 276 89 273 Z"></path> <path class="figure-body" d="M112 283 C119 282 126 279 131 273 C136 276 139 281 139 289 L145 394 C146 407 139 415 129 415 C119 415 113 407 113 394 Z"></path> </svg>`,
+                girl: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"> <ellipse class="figure-head" cx="110" cy="57" rx="29" ry="35"></ellipse> <path class="figure-body" d="M89 108 C77 112 70 123 67 139 L56 229 C54 241 60 249 69 250 C78 251 84 244 86 234 L91 176 L92 224 C92 242 95 257 99 271 C105 275 115 275 121 271 C125 257 128 242 128 224 L129 176 L134 234 C136 244 142 251 151 250 C160 249 166 241 164 229 L153 139 C150 123 143 112 131 108 C120 104 100 104 89 108 Z"></path> <path class="figure-body" d="M99 271 C102 273 105 275 108 275 L107 394 C107 407 101 415 91 415 C81 415 74 407 75 394 L83 288 C83 280 89 274 99 271 Z"></path> <path class="figure-body" d="M112 275 C115 275 118 273 121 271 C131 274 137 280 137 288 L145 394 C146 407 139 415 129 415 C119 415 113 407 113 394 Z"></path> </svg>`
             };
 
             return figures[character] || figures.man;
