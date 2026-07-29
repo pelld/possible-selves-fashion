@@ -179,6 +179,46 @@
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; }
         }
+
+
+        /* ============================================================================================================
+           08B. OPENING REVISION — FAINT BRAND, DISTINCT ALIGNED FIGURES
+           ============================================================================================================ */
+        header .brand { color: rgba(40,40,38,.20); font-size: 9px; letter-spacing: .20em; }
+        #opening { position: relative; grid-template-rows: clamp(155px,24vh,255px) minmax(430px,1fr); padding-top: 8px; overflow: hidden; }
+        .brand-banner { display: flex; width: 100%; align-items: flex-start; justify-content: center; color: rgba(45,45,42,.055); font-family: Didot, "Bodoni MT", "Times New Roman", serif; font-size: clamp(98px,15.4vw,245px); font-weight: 400; letter-spacing: .16em; line-height: .88; white-space: nowrap; user-select: none; transform: translateX(.08em); }
+        .character-grid { width: min(1220px,100%); min-height: 430px; align-self: stretch; align-items: end; padding: 0 0 18px; gap: clamp(18px,4vw,78px); }
+        .character { min-height: 100%; padding: 0 0 30px; }
+        .character-label { color: rgba(45,45,43,.50); font-size: 11px; letter-spacing: .16em; }
+        .outline-person { position: absolute; top: auto; bottom: 68px; left: 50%; width: min(12.5vw,184px); height: min(31vw,420px); transform: translateX(-50%); filter: blur(.38px); opacity: .46; transform-origin: bottom center; }
+        .outline-person--child { width: min(10.2vw,148px); height: min(25vw,338px); }
+        .outline-person span { position: static; display: inline; border: 0; background: transparent; }
+        .figure-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+        .figure-head, .figure-body { fill: none; stroke: rgba(67,67,63,.58); stroke-width: 2.05; vector-effect: non-scaling-stroke; }
+        .figure-body { stroke-linecap: round; stroke-linejoin: round; }
+        .character:hover .outline-person, .character:focus-visible .outline-person { filter: blur(0); opacity: .88; transform: translateX(-50%) translateY(-8px); }
+        .character:hover .outline-person--child, .character:focus-visible .outline-person--child { transform: translateX(-50%) translateY(-8px); }
+
+        /* The same aligned SVG person is used inside the dressing and fork stages. */
+        .person-canvas::before, .person-canvas::after, .choice-canvas::before, .choice-canvas::after { content: none !important; }
+        .person-canvas > .figure-svg, .choice-canvas > .figure-svg { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; }
+        .person-canvas .figure-head, .person-canvas .figure-body, .choice-canvas .figure-head, .choice-canvas .figure-body { stroke: rgba(67,67,63,.34); stroke-width: 1.55; }
+        #single[data-character="boy"] .person-canvas, #single[data-character="girl"] .person-canvas,
+        #single[data-character="boy"] .look-layers, #single[data-character="girl"] .look-layers { transform: scale(.79); transform-origin: bottom center; }
+        .choice-canvas[data-character="boy"], .choice-canvas[data-character="girl"] { transform: scale(.79); transform-origin: bottom center; }
+        .possible:hover .choice-canvas[data-character="boy"], .possible:hover .choice-canvas[data-character="girl"] { transform: scale(.79) translateY(4px); }
+
+        @media (max-width: 760px) {
+            #opening { grid-template-rows: 122px 1fr; padding-top: 8px; }
+            .brand-banner { font-size: clamp(72px,25vw,126px); letter-spacing: .10em; }
+            .character-grid { min-height: 610px; align-items: end; }
+            .character { min-height: 300px; }
+            .outline-person { bottom: 58px; width: 112px; height: 260px; transform: translateX(-50%); }
+            .outline-person--child { width: 90px; height: 216px; }
+            .character:hover .outline-person, .character:focus-visible .outline-person,
+            .character:hover .outline-person--child, .character:focus-visible .outline-person--child { transform: translateX(-50%) translateY(-5px); }
+        }
+
     </style>
 </head>
 <body>
@@ -186,7 +226,7 @@
          09A. FIXED BRAND FRAME
          ================================================================================================================ -->
     <header>
-        <button class="brand" id="reset" type="button" aria-label="Return to the opening screen"><span>POSSIBLE</span><span>SELVES</span></button>
+        <button class="brand" id="reset" type="button" aria-label="Return to the opening screen"><span>PS</span></button>
         <div class="header-actions">
             <button class="quiet" id="open-notes" type="button">Studio notes</button>
             <button class="quiet" id="open-look" type="button">Look <span id="look-count">0</span></button>
@@ -198,27 +238,35 @@
              10A. OPENING
              ============================================================================================================ -->
         <section class="screen active" id="opening">
-            <div class="copy">
-                <p class="eyebrow">A shop that pays attention</p>
-                <h1>Who are we dressing today?</h1>
-                <p class="instruction">Take your time.</p>
-            </div>
+            <div class="brand-banner" aria-hidden="true">KOVA</div>
 
-            <div class="character-grid">
-                <button class="character" data-character="man" type="button" aria-label="Dress a man">
-                    <span class="outline-person" aria-hidden="true"><span class="head"></span><span class="torso"></span><span class="arm left"></span><span class="arm right"></span><span class="leg left"></span><span class="leg right"></span></span>
+            <div class="character-grid" aria-label="Choose who to dress">
+                <button class="character character--man" data-character="man" type="button" aria-label="Dress a man">
+                    <span class="outline-person outline-person--adult" aria-hidden="true"><svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false">
+        <ellipse class="figure-head" cx="110" cy="45" rx="29" ry="34"></ellipse>
+        <path class="figure-body" d="M82 91 C67 95 60 107 57 125 L44 218 C42 230 48 238 57 239 C66 240 72 234 74 223 L82 161 L82 273 L74 399 C73 412 80 420 91 420 C101 420 107 413 108 400 L111 286 L114 400 C115 413 121 420 131 420 C142 420 149 412 148 399 L140 273 L140 161 L148 223 C150 234 156 240 165 239 C174 238 180 230 178 218 L165 125 C162 107 155 95 140 91 C128 88 119 87 111 87 C103 87 94 88 82 91 Z"></path>
+    </svg></span>
                     <span class="character-label">Man</span>
                 </button>
-                <button class="character" data-character="woman" type="button" aria-label="Dress a woman">
-                    <span class="outline-person" aria-hidden="true"><span class="head"></span><span class="torso"></span><span class="arm left"></span><span class="arm right"></span><span class="leg left"></span><span class="leg right"></span></span>
+                <button class="character character--woman" data-character="woman" type="button" aria-label="Dress a woman">
+                    <span class="outline-person outline-person--adult" aria-hidden="true"><svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false">
+        <ellipse class="figure-head" cx="110" cy="45" rx="28" ry="34"></ellipse>
+        <path class="figure-body" d="M87 91 C73 95 65 108 62 126 L49 219 C47 230 52 238 61 239 C70 240 76 234 78 223 L84 160 C84 190 80 226 74 257 C82 271 95 279 105 282 L99 399 C98 412 104 420 115 420 C125 420 131 413 132 400 L135 292 L138 400 C139 413 145 420 155 420 C166 420 172 412 171 399 L165 282 C175 279 188 271 196 257 C190 226 186 190 186 160 L192 223 C194 234 200 240 209 239 C218 238 223 230 221 219 L208 126 C205 108 197 95 183 91 C170 87 156 85 135 85 C114 85 100 87 87 91 Z" transform="translate(-25 0)"></path>
+    </svg></span>
                     <span class="character-label">Woman</span>
                 </button>
-                <button class="character" data-character="boy" type="button" aria-label="Dress a boy">
-                    <span class="outline-person child" aria-hidden="true"><span class="head"></span><span class="torso"></span><span class="arm left"></span><span class="arm right"></span><span class="leg left"></span><span class="leg right"></span></span>
+                <button class="character character--boy" data-character="boy" type="button" aria-label="Dress a boy">
+                    <span class="outline-person outline-person--child" aria-hidden="true"><svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false">
+        <ellipse class="figure-head" cx="110" cy="58" rx="32" ry="36"></ellipse>
+        <path class="figure-body" d="M84 108 C70 112 63 124 60 141 L49 230 C48 241 53 248 62 249 C71 250 77 244 79 234 L85 176 L85 274 L79 393 C78 405 85 413 95 413 C105 413 111 406 112 394 L114 291 L117 394 C118 406 124 413 134 413 C144 413 151 405 150 393 L144 274 L144 176 L150 234 C152 244 158 250 167 249 C176 248 181 241 180 230 L169 141 C166 124 159 112 145 108 C132 104 121 103 114 103 C107 103 97 104 84 108 Z"></path>
+    </svg></span>
                     <span class="character-label">Boy</span>
                 </button>
-                <button class="character" data-character="girl" type="button" aria-label="Dress a girl">
-                    <span class="outline-person child" aria-hidden="true"><span class="head"></span><span class="torso"></span><span class="arm left"></span><span class="arm right"></span><span class="leg left"></span><span class="leg right"></span></span>
+                <button class="character character--girl" data-character="girl" type="button" aria-label="Dress a girl">
+                    <span class="outline-person outline-person--child" aria-hidden="true"><svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false">
+        <ellipse class="figure-head" cx="110" cy="58" rx="31" ry="36"></ellipse>
+        <path class="figure-body" d="M88 108 C75 112 68 124 65 141 L54 230 C53 241 58 248 67 249 C76 250 82 244 84 234 L89 176 C89 205 85 234 80 259 C87 271 98 278 106 280 L101 393 C100 405 106 413 116 413 C126 413 132 406 133 394 L136 294 L139 394 C140 406 146 413 156 413 C166 413 172 405 171 393 L166 280 C174 278 185 271 192 259 C187 234 183 205 183 176 L188 234 C190 244 196 250 205 249 C214 248 219 241 218 230 L207 141 C204 124 197 112 184 108 C171 104 156 103 136 103 C116 103 101 104 88 108 Z" transform="translate(-26 0)"></path>
+    </svg></span>
                     <span class="character-label">Girl</span>
                 </button>
             </div>
@@ -383,6 +431,7 @@
         const dressing = document.querySelector("#dressing");
         const single = document.querySelector("#single");
         const currentLook = document.querySelector("#current-look");
+        const personCanvas = document.querySelector(".person-canvas");
         const fork = document.querySelector("#fork");
         const leftChoice = document.querySelector("#left-choice");
         const rightChoice = document.querySelector("#right-choice");
@@ -401,12 +450,33 @@
         const lookDialog = document.querySelector("#look-dialog");
         const bagSummary = document.querySelector("#bag-summary");
 
+
+
+        /* ============================================================================================================
+           15B. ALIGNED FIGURE DRAWINGS
+           ============================================================================================================ */
+        function figureMarkup(character) {
+            const figures = {
+                man: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"><ellipse class="figure-head" cx="110" cy="45" rx="29" ry="34"></ellipse><path class="figure-body" d="M82 91 C67 95 60 107 57 125 L44 218 C42 230 48 238 57 239 C66 240 72 234 74 223 L82 161 L82 273 L74 399 C73 412 80 420 91 420 C101 420 107 413 108 400 L111 286 L114 400 C115 413 121 420 131 420 C142 420 149 412 148 399 L140 273 L140 161 L148 223 C150 234 156 240 165 239 C174 238 180 230 178 218 L165 125 C162 107 155 95 140 91 C128 88 119 87 111 87 C103 87 94 88 82 91 Z"></path></svg>`,
+                woman: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"><ellipse class="figure-head" cx="110" cy="45" rx="28" ry="34"></ellipse><path class="figure-body" d="M87 91 C73 95 65 108 62 126 L49 219 C47 230 52 238 61 239 C70 240 76 234 78 223 L84 160 C84 190 80 226 74 257 C82 271 95 279 105 282 L99 399 C98 412 104 420 115 420 C125 420 131 413 132 400 L135 292 L138 400 C139 413 145 420 155 420 C166 420 172 412 171 399 L165 282 C175 279 188 271 196 257 C190 226 186 190 186 160 L192 223 C194 234 200 240 209 239 C218 238 223 230 221 219 L208 126 C205 108 197 95 183 91 C170 87 156 85 135 85 C114 85 100 87 87 91 Z" transform="translate(-25 0)"></path></svg>`,
+                boy: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"><ellipse class="figure-head" cx="110" cy="58" rx="32" ry="36"></ellipse><path class="figure-body" d="M84 108 C70 112 63 124 60 141 L49 230 C48 241 53 248 62 249 C71 250 77 244 79 234 L85 176 L85 274 L79 393 C78 405 85 413 95 413 C105 413 111 406 112 394 L114 291 L117 394 C118 406 124 413 134 413 C144 413 151 405 150 393 L144 274 L144 176 L150 234 C152 244 158 250 167 249 C176 248 181 241 180 230 L169 141 C166 124 159 112 145 108 C132 104 121 103 114 103 C107 103 97 104 84 108 Z"></path></svg>`,
+                girl: `<svg class="figure-svg" viewBox="0 0 220 440" aria-hidden="true" focusable="false"><ellipse class="figure-head" cx="110" cy="58" rx="31" ry="36"></ellipse><path class="figure-body" d="M88 108 C75 112 68 124 65 141 L54 230 C53 241 58 248 67 249 C76 250 82 244 84 234 L89 176 C89 205 85 234 80 259 C87 271 98 278 106 280 L101 393 C100 405 106 413 116 413 C126 413 132 406 133 394 L136 294 L139 394 C140 406 146 413 156 413 C166 413 172 405 171 393 L166 280 C174 278 185 271 192 259 C187 234 183 205 183 176 L188 234 C190 244 196 250 205 249 C214 248 219 241 218 230 L207 141 C204 124 197 112 184 108 C171 104 156 103 136 103 C116 103 101 104 88 108 Z" transform="translate(-26 0)"></path></svg>`
+            };
+
+            return figures[character] || figures.man;
+        }
+
+
         /* ============================================================================================================
            16A. OPENING AND BODY NAVIGATION
            ============================================================================================================ */
         document.querySelectorAll(".character").forEach((button) => {
             button.addEventListener("click", () => {
                 state.character = button.dataset.character;
+                personCanvas.innerHTML = figureMarkup(state.character);
+                single.dataset.character = state.character;
+                leftCanvas.dataset.character = state.character;
+                rightCanvas.dataset.character = state.character;
                 opening.classList.remove("active");
                 dressing.classList.add("active");
                 renderCurrent();
@@ -545,7 +615,7 @@
         }
 
         function renderChoice(canvas,candidate,zone) {
-            canvas.innerHTML = "";
+            canvas.innerHTML = figureMarkup(state.character);
             Object.entries(state.selected).forEach(([existingZone,product]) => {
                 if (existingZone !== zone && !(zone === "whole" && ["top","outer","bottom"].includes(existingZone))) canvas.append(garment(existingZone,product));
             });
@@ -646,6 +716,8 @@
             state.history = [];
             state.profile = { expressive: 50, structured: 50, natural: 50 };
             currentLook.innerHTML = "";
+            personCanvas.innerHTML = "";
+            delete single.dataset.character;
             fork.hidden = true;
             single.hidden = false;
             completion.hidden = true;

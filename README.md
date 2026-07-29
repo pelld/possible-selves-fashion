@@ -33,3 +33,8 @@ For the GitHub account `pelld`:
 5. The site will be available at `https://pelld.github.io/possible-selves-fashion/`.
 
 The code is wide-formatted and divided into numbered, commented sections for incremental editing.
+
+
+## Revision 2
+
+The opening now uses a very faint, widely spaced brand word and four aligned SVG silhouettes with distinct adult/child and man/woman proportions. The same figure drawings continue into the dressing and fork stages.
