@@ -90,37 +90,51 @@ const dressingInstruction = document.querySelector("#dressing-instruction");
 const notesDialog = document.querySelector("#notes-dialog");
 const lookDialog = document.querySelector("#look-dialog");
 const lookSummary = document.querySelector("#look-summary");
-const wordmarkReaction = document.querySelector("#wordmark-reaction");
+const wordmarkFills = document.querySelector("#wordmark-fills");
 
 const FIGURES = {
-    man: "assets/figure-man.png",
-    woman: "assets/figure-woman.png",
-    boy: "assets/figure-boy.png",
-    girl: "assets/figure-girl.png"
+    man: "figure-man.png",
+    woman: "figure-woman.png",
+    boy: "figure-boy.png",
+    girl: "figure-girl.png"
 };
 
 const BRAND_COLOURS = ["#123846", "#761a31", "#66516f"];
 
 /* ====================================================================================================================
    03A. REACTIVE WORDMARK
-   The double-line word stays faint; small runs of colour move inside the channel.
+   The name begins as one faint outline. Garment colours quietly occupy small parts of the letters as the look develops.
    ==================================================================================================================== */
 
-function reactWordmark(strength = 0.12) {
-    const gaps = Array.from({ length: 8 }, (_, index) => {
-        const filled = 18 + Math.floor(Math.random() * 72);
-        const empty = 55 + Math.floor(Math.random() * 150);
-        return index % 2 === 0 ? `${filled} ${empty}` : `${filled + 14} ${empty + 22}`;
-    }).join(" ");
+function reactWordmark(colour = null, intensity = 0) {
+    wordmarkFills.innerHTML = "";
 
-    wordmarkReaction.style.stroke = BRAND_COLOURS[Math.floor(Math.random() * BRAND_COLOURS.length)];
-    wordmarkReaction.style.strokeDasharray = gaps;
-    wordmarkReaction.style.strokeDashoffset = String(Math.floor(Math.random() * 420));
-    wordmarkReaction.style.opacity = String(strength);
+    if (!colour || intensity <= 0) return;
+
+    const fragmentCount = Math.min(9, Math.max(1, intensity));
+    const svgNamespace = "http://www.w3.org/2000/svg";
+
+    for (let index = 0; index < fragmentCount; index += 1) {
+        const rectangle = document.createElementNS(svgNamespace, "rect");
+        const width = 20 + Math.floor(Math.random() * 86);
+        const x = 115 + Math.floor(Math.random() * (1370 - width));
+        const height = 18 + Math.floor(Math.random() * 66);
+        const y = 34 + Math.floor(Math.random() * (182 - height));
+
+        rectangle.setAttribute("x", String(x));
+        rectangle.setAttribute("y", String(y));
+        rectangle.setAttribute("width", String(width));
+        rectangle.setAttribute("height", String(height));
+        rectangle.setAttribute("rx", String(Math.min(4, height / 4)));
+        rectangle.setAttribute("fill", colour);
+        rectangle.style.opacity = String(0.035 + Math.min(intensity, 8) * 0.012);
+        rectangle.style.transform = `translateY(${Math.random() > 0.5 ? "2px" : "-2px"})`;
+
+        wordmarkFills.append(rectangle);
+    }
 }
 
-window.setInterval(() => reactWordmark(0.09 + Math.random() * 0.07), 4200);
-reactWordmark(0.1);
+reactWordmark();
 
 /* ====================================================================================================================
    04A. OPENING
@@ -132,7 +146,7 @@ document.querySelectorAll(".character").forEach((button) => {
         setFigureSources();
         opening.classList.remove("is-active");
         dressing.classList.add("is-active");
-        reactWordmark(0.18);
+        reactWordmark();
         renderCurrentLook();
     });
 });
@@ -233,7 +247,6 @@ function openFork(zone) {
     dressingEyebrow.textContent = state.decisions >= 2 ? "The studio has an opinion" : "Two possible selves";
     dressingTitle.textContent = "Which one should go back?";
     dressingInstruction.textContent = "Click the possibility you want to dismiss.";
-    reactWordmark(0.18);
 }
 
 function studioRecommendation(options) {
@@ -267,6 +280,7 @@ function dismissChoice(dismissedIndex) {
 
     learnFrom(product);
     applyAtmosphere(product.colour);
+    reactWordmark(product.colour, Object.keys(state.selected).length + 1);
 
     const dismissed = dismissedIndex === 0 ? choiceLeft : choiceRight;
     const surviving = survivingIndex === 0 ? choiceLeft : choiceRight;
@@ -302,7 +316,6 @@ function dismissChoice(dismissedIndex) {
             : "Choose another body area—or revisit the last.";
 
         if (isComplete()) showCompletion();
-        reactWordmark(0.15);
     }, 720);
 }
 
@@ -427,7 +440,15 @@ document.querySelector("#save-notes").addEventListener("click", () => {
     dressingEyebrow.textContent = "The studio has your note";
     dressingTitle.textContent = "We will respond through the next choice.";
     dressingInstruction.textContent = "Nothing has been filtered out. The direction has simply changed.";
-    reactWordmark(0.2);
+    const noteColours = {
+        petrol: "#123846",
+        plum: "#761a31",
+        violet: "#66516f",
+        quiet: "#e9e2d6"
+    };
+
+    const noteColour = noteColours[state.notes.colour];
+    if (noteColour) reactWordmark(noteColour, Math.max(1, Object.keys(state.selected).length));
 });
 
 /* ====================================================================================================================
@@ -483,5 +504,5 @@ function reset() {
 
     dressing.classList.remove("is-active");
     opening.classList.add("is-active");
-    reactWordmark(0.1);
+    reactWordmark();
 }

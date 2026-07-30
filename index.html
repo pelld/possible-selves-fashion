@@ -27,30 +27,36 @@
         <section class="screen screen--opening is-active" id="opening">
             <button class="wordmark-button" id="wordmark-reset" type="button" aria-label="Torunkëshk — return home">
                 <svg class="wordmark" viewBox="0 0 1600 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Torunkëshk">
-                    <text class="wordmark__outer" x="800" y="205" text-anchor="middle">Torunkëshk</text>
-                    <text class="wordmark__cutout" x="800" y="205" text-anchor="middle">Torunkëshk</text>
-                    <text class="wordmark__reaction" id="wordmark-reaction" x="800" y="205" text-anchor="middle">Torunkëshk</text>
+                    <defs>
+                        <clipPath id="wordmark-letters">
+                            <text class="wordmark__clip-text" x="800" y="205" text-anchor="middle">Torunkëshk</text>
+                        </clipPath>
+                    </defs>
+
+                    <text class="wordmark__outline" x="800" y="205" text-anchor="middle">Torunkëshk</text>
+
+                    <g class="wordmark__fills" id="wordmark-fills" clip-path="url(#wordmark-letters)" aria-hidden="true"></g>
                 </svg>
             </button>
 
             <div class="character-grid" aria-label="Choose who to dress">
                 <button class="character" data-character="man" type="button" aria-label="Dress a man">
-                    <img src="assets/figure-man.png" alt="" aria-hidden="true">
+                    <img src="figure-man.png" alt="" aria-hidden="true">
                     <span>Man</span>
                 </button>
 
                 <button class="character" data-character="woman" type="button" aria-label="Dress a woman">
-                    <img src="assets/figure-woman.png" alt="" aria-hidden="true">
+                    <img src="figure-woman.png" alt="" aria-hidden="true">
                     <span>Woman</span>
                 </button>
 
                 <button class="character character--child" data-character="boy" type="button" aria-label="Dress a boy">
-                    <img src="assets/figure-boy.png" alt="" aria-hidden="true">
+                    <img src="figure-boy.png" alt="" aria-hidden="true">
                     <span>Boy</span>
                 </button>
 
                 <button class="character character--child" data-character="girl" type="button" aria-label="Dress a girl">
-                    <img src="assets/figure-girl.png" alt="" aria-hidden="true">
+                    <img src="figure-girl.png" alt="" aria-hidden="true">
                     <span>Girl</span>
                 </button>
             </div>
@@ -69,7 +75,7 @@
             <div class="stage">
                 <div class="single-self" id="single-self">
                     <div class="figure-stage">
-                        <img class="stage-person" id="central-person" src="assets/figure-man.png" alt="Neutral outline figure">
+                        <img class="stage-person" id="central-person" src="figure-man.png" alt="Neutral outline figure">
 
                         <div class="look-layers" id="current-look" aria-hidden="true"></div>
 
@@ -114,7 +120,7 @@
                     <button class="possible-self" id="choice-left" type="button" aria-label="Send the left possibility back">
                         <span class="studio-choice" id="studio-left" hidden>Studio choice</span>
                         <span class="possible-figure">
-                            <img class="fork-person" id="person-left" src="assets/figure-man.png" alt="">
+                            <img class="fork-person" id="person-left" src="figure-man.png" alt="">
                             <span class="fork-layers" id="layers-left" aria-hidden="true"></span>
                         </span>
                         <span class="possible-price" id="price-left"></span>
@@ -126,7 +132,7 @@
                     <button class="possible-self" id="choice-right" type="button" aria-label="Send the right possibility back">
                         <span class="studio-choice" id="studio-right" hidden>Studio choice</span>
                         <span class="possible-figure">
-                            <img class="fork-person" id="person-right" src="assets/figure-man.png" alt="">
+                            <img class="fork-person" id="person-right" src="figure-man.png" alt="">
                             <span class="fork-layers" id="layers-right" aria-hidden="true"></span>
                         </span>
                         <span class="possible-price" id="price-right"></span>

@@ -1,48 +1,42 @@
-# Torunkëshk minimalist fashion prototype
+# Torunkëshk — minimalist fashion prototype
 
-This is the corrected continuation of the original minimalist **Possible Selves** website.
+This version keeps the original minimalist interface.
 
-It does **not** replace the site with a conventional fashion homepage. The changes are deliberately limited to the ideas that had actually been agreed:
+The only visual changes are:
 
-- the brand name is now **Torunkëshk**;
-- the large faint wordmark remains at the top;
-- the wordmark uses a double-line treatment, with small colour fragments moving inside it;
-- the opening figures use the approved, more human contour drawings;
-- the choices are still Man, Woman, Boy and Girl;
-- the original body-navigation, two-self fork, Studio Notes and Look interactions remain;
-- clothing colours now use deep petrol, plum-red, muted violet and cream;
-- top layers have a brushed/sueded appearance, white trim, double grey hem stitching and a small `¨` signature mark.
+- the name is **Torunkëshk**;
+- the four improved contour figures replace the old CSS people;
+- the wordmark begins as one very faint double-line outline;
+- accepted clothing colours appear quietly inside small parts of the wordmark;
+- the same clothing colour enters the white background as a subtle wash;
+- the garment prototypes retain the petrol, plum, violet and cream palette, white trim, double grey stitching and small `¨` mark.
 
-## Files
+## Upload to GitHub
 
-`index.html`  
-The page structure: opening screen, figure selector, dressing stage, fork, Studio Notes and Look panel.
+Upload **all eight files** to the repository root:
 
-`styles.css`  
-All appearance and layout. This is where to change the wordmark size, colours, figures, garment shapes, stitching and responsive behaviour.
+- `index.html`
+- `styles.css`
+- `app.js`
+- `README.md`
+- `figure-man.png`
+- `figure-woman.png`
+- `figure-boy.png`
+- `figure-girl.png`
 
-`app.js`  
-All behaviour: character selection, garment suggestions, the two-self comparison, stylist learning, totals and the reactive wordmark.
+There is deliberately no `assets` folder in this version. Keeping the images at root avoids the missing-image problem shown in the previous deployment.
 
-`assets/figure-man.png`  
-`assets/figure-woman.png`  
-`assets/figure-boy.png`  
-`assets/figure-girl.png`  
-The approved contour figures, extracted as transparent images so they can be replaced without changing the HTML or JavaScript.
+## File roles
 
-## Important limitation
+`index.html` contains the page structure.
 
-The people are real image assets, but the garments are still visual prototype layers made with CSS. They now reflect the proposed Torunkëshk colours, brushed material, trim, stitching and mark. Later, those layers can be replaced with actual photographed garment cut-outs.
+`styles.css` contains the visual design, layout, garment shapes and animation styling.
 
-## Edit the brand name
+`app.js` contains the stylist logic, the two-self fork, Studio Notes, totals, background reaction and wordmark reaction.
 
-Search `index.html` for:
+The four PNG files are the visible people.
 
-`Torunkëshk`
-
-The large wordmark is an SVG text element, so no font file is required.
-
-## Edit the main colours
+## Main brand colours
 
 At the top of `styles.css`:
 
@@ -53,25 +47,10 @@ At the top of `styles.css`:
 --cream: #e9e2d6;
 ```
 
-The matching product colours are near the top of `app.js`.
+The matching fictional products are near the top of `app.js`.
 
-## Publish on GitHub Pages
+## GitHub Pages
 
-For the GitHub account `pelld`:
-
-1. Create or open the repository.
-2. Upload the contents of this folder to the repository root.
-3. Open **Settings → Pages**.
-4. Choose **Deploy from a branch**.
-5. Select `main` and `/ (root)`.
-6. Save.
-
-For a repository called `torunkeshk`, the address will be:
+For a repository named `torunkeshk` under the GitHub account `pelld`, the published address will be:
 
 `https://pelld.github.io/torunkeshk/`
-
-## Why this version is split into files
-
-The earlier prototype put HTML, CSS and JavaScript in one large file. This version separates them so a visual change in `styles.css` is less likely to disturb the interaction logic in `app.js`.
-
-There is no build step yet. The site is still one page, so keeping `index.html` intact is simpler while the design is changing. Once the page structure is stable, it can be split into reusable HTML components and assembled automatically.
