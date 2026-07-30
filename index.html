@@ -3,238 +3,225 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Torunkëshk — an experimental premium fashion-brand concept.">
+    <meta name="description" content="Torunkëshk — an experimental fashion stylist interface.">
     <title>Torunkëshk</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- =============================================================================================================
-         00A. BRAND HEADER — THE WORDMARK IS PART OF THE PAGE, NOT A SMALL CORNER LOGO
-         ============================================================================================================= -->
-    <header class="brand-header">
-        <div class="wordmark-wrap" aria-label="Torunkëshk">
-            <svg class="wordmark" viewBox="0 0 1600 260" role="img" aria-labelledby="wordmark-title">
-                <title id="wordmark-title">Torunkëshk</title>
-                <defs>
-                    <mask id="wordmark-channel-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="260">
-                        <rect x="0" y="0" width="1600" height="260" fill="black"></rect>
-                        <text x="42" y="198" class="wordmark-mask-text wordmark-mask-text--outer">Torunkëshk</text>
-                        <text x="42" y="198" class="wordmark-mask-text wordmark-mask-text--inner">Torunkëshk</text>
-                    </mask>
-                </defs>
+    <!-- ================================================================================================================
+         00A. QUIET FIXED CONTROLS
+         ================================================================================================================ -->
+    <header class="site-controls">
+        <button class="home-mark" id="reset" type="button" aria-label="Return to the opening screen">ë</button>
 
-                <text x="42" y="198" class="wordmark-base wordmark-base--outer">Torunkëshk</text>
-                <text x="42" y="198" class="wordmark-base wordmark-base--inner">Torunkëshk</text>
-
-                <g id="wordmark-fills" mask="url(#wordmark-channel-mask)" aria-hidden="true"></g>
-            </svg>
-        </div>
-
-        <nav class="brand-nav" aria-label="Primary navigation">
-            <button class="nav-link" id="studio-notes-open" type="button">Studio notes</button>
-            <button class="nav-link" id="look-open" type="button">Look <span id="look-count">0</span></button>
+        <nav class="header-actions" aria-label="Shop controls">
+            <button class="quiet-button" id="open-notes" type="button">Studio notes</button>
+            <button class="quiet-button" id="open-look" type="button">Look <span id="look-count">0</span></button>
         </nav>
     </header>
 
-    <main>
-        <!-- =========================================================================================================
-             01A. OPENING — PEOPLE BEFORE PRODUCTS
-             ========================================================================================================= -->
-        <section class="opening-section" aria-labelledby="opening-title">
-            <div class="opening-copy">
-                <p class="kicker">A first brand direction</p>
-                <h1 id="opening-title">Clothes for possible selves.</h1>
-                <p class="opening-text">Soft in the hand. Certain in shape. The stylist begins with you, then takes a position.</p>
-                <div class="opening-actions">
-                    <button class="primary-action" id="begin-button" type="button">Begin with a person</button>
-                    <span class="quiet-note">Take your time.</span>
+    <main aria-live="polite">
+        <!-- ============================================================================================================
+             01A. OPENING — SAME MINIMALIST STRUCTURE, NEW NAME AND APPROVED FIGURES
+             ============================================================================================================ -->
+        <section class="screen screen--opening is-active" id="opening">
+            <button class="wordmark-button" id="wordmark-reset" type="button" aria-label="Torunkëshk — return home">
+                <svg class="wordmark" viewBox="0 0 1600 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Torunkëshk">
+                    <text class="wordmark__outer" x="800" y="205" text-anchor="middle">Torunkëshk</text>
+                    <text class="wordmark__cutout" x="800" y="205" text-anchor="middle">Torunkëshk</text>
+                    <text class="wordmark__reaction" id="wordmark-reaction" x="800" y="205" text-anchor="middle">Torunkëshk</text>
+                </svg>
+            </button>
+
+            <div class="character-grid" aria-label="Choose who to dress">
+                <button class="character" data-character="man" type="button" aria-label="Dress a man">
+                    <img src="assets/figure-man.png" alt="" aria-hidden="true">
+                    <span>Man</span>
+                </button>
+
+                <button class="character" data-character="woman" type="button" aria-label="Dress a woman">
+                    <img src="assets/figure-woman.png" alt="" aria-hidden="true">
+                    <span>Woman</span>
+                </button>
+
+                <button class="character character--child" data-character="boy" type="button" aria-label="Dress a boy">
+                    <img src="assets/figure-boy.png" alt="" aria-hidden="true">
+                    <span>Boy</span>
+                </button>
+
+                <button class="character character--child" data-character="girl" type="button" aria-label="Dress a girl">
+                    <img src="assets/figure-girl.png" alt="" aria-hidden="true">
+                    <span>Girl</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ============================================================================================================
+             02A. DRESSING ROOM — THE BODY REMAINS THE NAVIGATION
+             ============================================================================================================ -->
+        <section class="screen screen--dressing" id="dressing">
+            <div class="dressing-copy">
+                <p class="eyebrow" id="dressing-eyebrow">Begin anywhere</p>
+                <h1 id="dressing-title">Choose where the first possibility begins.</h1>
+                <p class="instruction" id="dressing-instruction">Move over the figure, then click a body area.</p>
+            </div>
+
+            <div class="stage">
+                <div class="single-self" id="single-self">
+                    <div class="figure-stage">
+                        <img class="stage-person" id="central-person" src="assets/figure-man.png" alt="Neutral outline figure">
+
+                        <div class="look-layers" id="current-look" aria-hidden="true"></div>
+
+                        <!-- The hit areas are separate SVG shapes. They do not cover one another. -->
+                        <svg class="body-map" viewBox="0 0 300 650" aria-label="Choose a clothing area">
+                            <g class="body-zone" data-zone="accessories" tabindex="0" role="button" aria-label="Choose accessories">
+                                <ellipse cx="150" cy="73" rx="50" ry="56"></ellipse>
+                                <text x="150" y="76">Accessories</text>
+                            </g>
+
+                            <g class="body-zone" data-zone="outer" tabindex="0" role="button" aria-label="Choose outerwear">
+                                <path d="M110 128 H190 L214 140 L208 194 H92 L86 140 Z"></path>
+                                <path d="M86 140 C62 152 48 184 46 226 L42 354 H86 L92 194 Z"></path>
+                                <path d="M214 140 C238 152 252 184 254 226 L258 354 H214 L208 194 Z"></path>
+                                <text x="245" y="178">Outer</text>
+                            </g>
+
+                            <g class="body-zone" data-zone="top" tabindex="0" role="button" aria-label="Choose a top">
+                                <path d="M94 196 L206 196 L202 352 L98 352 Z"></path>
+                                <text x="150" y="273">Top</text>
+                            </g>
+
+                            <g class="body-zone" data-zone="bottom" tabindex="0" role="button" aria-label="Choose bottoms">
+                                <path d="M100 354 L200 354 L204 548 L154 548 L150 411 L146 548 L96 548 Z"></path>
+                                <text x="150" y="458">Legs</text>
+                            </g>
+
+                            <g class="body-zone" data-zone="shoes" tabindex="0" role="button" aria-label="Choose shoes">
+                                <path d="M82 548 H146 V624 H82 Z M154 548 H218 V624 H154 Z"></path>
+                                <text x="150" y="596">Shoes</text>
+                            </g>
+                        </svg>
+
+                        <button class="whole-button" data-zone="whole" type="button">Whole</button>
+                    </div>
+                </div>
+
+                <!-- ====================================================================================================
+                     02B. FORK — TWO DISTINCT POSSIBLE SELVES; CLICK THE ONE TO SEND BACK
+                     ==================================================================================================== -->
+                <div class="fork" id="fork" hidden>
+                    <button class="possible-self" id="choice-left" type="button" aria-label="Send the left possibility back">
+                        <span class="studio-choice" id="studio-left" hidden>Studio choice</span>
+                        <span class="possible-figure">
+                            <img class="fork-person" id="person-left" src="assets/figure-man.png" alt="">
+                            <span class="fork-layers" id="layers-left" aria-hidden="true"></span>
+                        </span>
+                        <span class="possible-price" id="price-left"></span>
+                        <span class="send-back">Send back</span>
+                    </button>
+
+                    <div class="fork-divider" aria-hidden="true"><span>or</span></div>
+
+                    <button class="possible-self" id="choice-right" type="button" aria-label="Send the right possibility back">
+                        <span class="studio-choice" id="studio-right" hidden>Studio choice</span>
+                        <span class="possible-figure">
+                            <img class="fork-person" id="person-right" src="assets/figure-man.png" alt="">
+                            <span class="fork-layers" id="layers-right" aria-hidden="true"></span>
+                        </span>
+                        <span class="possible-price" id="price-right"></span>
+                        <span class="send-back">Send back</span>
+                    </button>
+                </div>
+
+                <div class="completion" id="completion" hidden>
+                    <p class="completion-total" id="completion-total"></p>
+                    <div class="completion-buttons">
+                        <button class="primary-button" id="take-look" type="button">Take this look</button>
+                        <button class="quiet-button quiet-button--large" id="keep-exploring" type="button">Keep exploring</button>
+                    </div>
                 </div>
             </div>
-
-            <div class="figure-selector" id="figure-selector" aria-label="Choose who is being dressed">
-                <button class="figure-option" type="button" data-person="Man">
-                    <span class="figure-image-wrap"><img src="assets/figure-man.png" alt="Neutral outlined adult man"></span>
-                    <span class="figure-label">Man</span>
-                </button>
-
-                <button class="figure-option" type="button" data-person="Woman">
-                    <span class="figure-image-wrap"><img src="assets/figure-woman.png" alt="Neutral outlined adult woman"></span>
-                    <span class="figure-label">Woman</span>
-                </button>
-
-                <button class="figure-option" type="button" data-person="Boy">
-                    <span class="figure-image-wrap"><img src="assets/figure-boy.png" alt="Neutral outlined boy"></span>
-                    <span class="figure-label">Boy</span>
-                </button>
-
-                <button class="figure-option" type="button" data-person="Girl">
-                    <span class="figure-image-wrap"><img src="assets/figure-girl.png" alt="Neutral outlined girl"></span>
-                    <span class="figure-label">Girl</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- =========================================================================================================
-             02A. BRAND MATERIAL — COLOUR, FEEL AND SIGNATURE DETAIL
-             ========================================================================================================= -->
-        <section class="material-section" aria-labelledby="material-title">
-            <div class="material-heading">
-                <p class="kicker">The material language</p>
-                <h2 id="material-title">Plush, not precious.</h2>
-                <p>Sueded heavyweight cotton jersey gives the softness of brushed fabric without losing its structure. White trim makes the dark colours feel clean rather than heavy.</p>
-            </div>
-
-            <div class="material-grid">
-                <article class="image-tile image-tile--wide">
-                    <img src="assets/editorial-look.jpg" alt="Torunkëshk burgundy sweatshirt and deep petrol shorts concept">
-                    <div class="image-caption">
-                        <span>Shape</span>
-                        <strong>Relaxed, but held.</strong>
-                    </div>
-                </article>
-
-                <article class="image-tile">
-                    <img src="assets/brushed-petrol.jpg" alt="Close-up of dark petrol brushed cotton fabric">
-                    <div class="image-caption">
-                        <span>Touch</span>
-                        <strong>Brushed cotton.</strong>
-                    </div>
-                </article>
-
-                <article class="image-tile">
-                    <img src="assets/stitch-plum.jpg" alt="Plum fabric with double grey stitching and a two-dot mark">
-                    <div class="image-caption">
-                        <span>Signature</span>
-                        <strong>Two stitches. Two dots.</strong>
-                    </div>
-                </article>
-            </div>
-        </section>
-
-        <!-- =========================================================================================================
-             03A. SIGNATURE GARMENT STUDY — THE BRAND MARK LIVES AT THE HEM
-             ========================================================================================================= -->
-        <section class="signature-section" aria-labelledby="signature-title">
-            <div class="signature-copy">
-                <p class="kicker">The quiet mark</p>
-                <h2 id="signature-title">There when you look for it.</h2>
-                <p>The diaeresis from the name becomes the smallest possible logo: two dots near the lower-left hem, held above two grey stitch lines. It repeats across the clothes and the website without shouting.</p>
-
-                <div class="colour-controls" aria-label="Choose a garment colour">
-                    <button class="colour-chip is-selected" type="button" data-colour="plum" aria-label="Show black-cherry plum garment"></button>
-                    <button class="colour-chip colour-chip--petrol" type="button" data-colour="petrol" aria-label="Show deep petrol garment"></button>
-                    <button class="colour-chip colour-chip--violet" type="button" data-colour="violet" aria-label="Show muted violet garment"></button>
-                </div>
-            </div>
-
-            <div class="garment-study" id="garment-study" data-colour="plum" aria-label="Torunkëshk garment detail study">
-                <div class="garment-neck" aria-hidden="true"></div>
-                <div class="garment-signature" aria-label="Torunkëshk two-dot mark"><i></i><i></i></div>
-                <div class="garment-stitch garment-stitch--one" aria-hidden="true"></div>
-                <div class="garment-stitch garment-stitch--two" aria-hidden="true"></div>
-                <span class="garment-note">double grey stitching / white trim / brushed surface</span>
-            </div>
-        </section>
-
-        <!-- =========================================================================================================
-             04A. COLOUR AND PRODUCT DIRECTION
-             ========================================================================================================= -->
-        <section class="palette-section" aria-labelledby="palette-title">
-            <div class="palette-visual">
-                <div class="palette-swatch palette-swatch--petrol"><span>Deep petrol</span></div>
-                <div class="palette-swatch palette-swatch--plum"><span>Black cherry</span></div>
-                <div class="palette-swatch palette-swatch--violet"><span>Muted violet</span></div>
-                <div class="palette-swatch palette-swatch--white"><span>Warm white</span></div>
-            </div>
-
-            <div class="palette-copy">
-                <p class="kicker">The palette</p>
-                <h2 id="palette-title">Colour with restraint.</h2>
-                <p>Petrol and black cherry do the heavy lifting. Violet sits behind them as a quieter bridge. White trim and stitch grey keep the whole system clear.</p>
-                <img class="product-grid-image" src="assets/product-grid.jpg" alt="Small grid of Torunkëshk sweatshirt colourways">
-            </div>
-        </section>
-
-        <!-- =========================================================================================================
-             05A. CLOSING
-             ========================================================================================================= -->
-        <section class="closing-section">
-            <div>
-                <p class="kicker">Working proposition</p>
-                <h2>Made for now. Built for next.</h2>
-            </div>
-            <p>Torunkëshk is provisional. The design language is the real work: possible selves, attentive service, plush structure, restrained colour, and the mark hidden in plain sight.</p>
-            <button class="secondary-action" id="brand-board-open" type="button">See the generated brand board</button>
         </section>
     </main>
 
-    <!-- =============================================================================================================
-         06A. STUDIO NOTES DIALOG
-         ============================================================================================================= -->
-    <dialog class="dialog" id="studio-notes-dialog">
+    <!-- ================================================================================================================
+         03A. OPTIONAL STUDIO NOTES
+         ================================================================================================================ -->
+    <dialog id="notes-dialog">
         <form method="dialog" class="dialog-panel">
-            <div class="dialog-heading">
+            <div class="dialog-header">
                 <div>
-                    <p class="kicker">Studio notes</p>
-                    <h2>What should influence the stylist?</h2>
+                    <p class="eyebrow">A note for the studio</p>
+                    <h2>What should influence the next possibilities?</h2>
                 </div>
-                <button class="dialog-close" value="cancel" aria-label="Close studio notes">×</button>
+                <button class="close-button" value="cancel" aria-label="Close studio notes">×</button>
             </div>
 
-            <label>
-                Colour direction
-                <select id="note-colour">
-                    <option>Let the studio decide</option>
-                    <option>Mostly dark</option>
-                    <option>Push towards colour</option>
-                    <option>Quiet and neutral</option>
-                </select>
-            </label>
+            <div class="notes-grid">
+                <label>
+                    Colours
+                    <select id="note-colour">
+                        <option value="open">Surprise me</option>
+                        <option value="petrol">Deep petrol</option>
+                        <option value="plum">Plum and red</option>
+                        <option value="violet">Muted violet</option>
+                        <option value="quiet">Cream and quiet neutrals</option>
+                    </select>
+                </label>
 
-            <label>
-                Materials or requirements
-                <textarea id="note-material" rows="4" placeholder="No leather, natural fibres, machine washable…"></textarea>
-            </label>
+                <label>
+                    How far should we push?
+                    <input id="note-adventure" type="range" min="0" max="100" value="55">
+                    <span class="range-ends"><span>Recognise me</span><span>Challenge me</span></span>
+                </label>
 
-            <label>
-                Environmental impact
-                <select id="note-environment">
-                    <option>Not a deciding factor</option>
-                    <option>Prefer lower-impact choices</option>
-                    <option>Make it a priority</option>
-                </select>
-            </label>
+                <label>
+                    Price
+                    <select id="note-price">
+                        <option value="style-first">Style first</option>
+                        <option value="gentle">Keep an eye on the total</option>
+                        <option value="boundary">Stay within a firm boundary</option>
+                    </select>
+                </label>
 
-            <button class="primary-action" value="default">Let the studio respond</button>
-        </form>
-    </dialog>
+                <label>
+                    Materials or requirements
+                    <textarea id="note-material" rows="3" placeholder="For example: no leather, natural fibres, machine washable…"></textarea>
+                </label>
 
-    <!-- =============================================================================================================
-         07A. LOOK DIALOG
-         ============================================================================================================= -->
-    <dialog class="dialog" id="look-dialog">
-        <form method="dialog" class="dialog-panel">
-            <div class="dialog-heading">
-                <div>
-                    <p class="kicker">Current look</p>
-                    <h2 id="look-dialog-title">Nothing chosen yet.</h2>
-                </div>
-                <button class="dialog-close" value="cancel" aria-label="Close look">×</button>
+                <label>
+                    Environmental impact
+                    <select id="note-environment">
+                        <option value="not-deciding">Not a deciding factor</option>
+                        <option value="prefer">Prefer lower-impact choices</option>
+                        <option value="priority">Make it a priority</option>
+                    </select>
+                </label>
             </div>
-            <p id="look-dialog-copy">Choose one of the four people to begin. The full forked-self interaction comes after this brand direction is agreed.</p>
+
+            <button class="primary-button" id="save-notes" value="default">Let the studio respond</button>
         </form>
     </dialog>
 
-    <!-- =============================================================================================================
-         08A. GENERATED BRAND BOARD DIALOG
-         ============================================================================================================= -->
-    <dialog class="dialog dialog--image" id="brand-board-dialog">
-        <form method="dialog" class="dialog-panel dialog-panel--image">
-            <button class="dialog-close dialog-close--image" value="cancel" aria-label="Close brand board">×</button>
-            <img src="assets/brand-board-reference.jpg" alt="Generated Torunkëshk fashion-brand concept board">
+    <!-- ================================================================================================================
+         04A. FICTIONAL LOOK PANEL
+         ================================================================================================================ -->
+    <dialog id="look-dialog">
+        <form method="dialog" class="dialog-panel">
+            <div class="dialog-header">
+                <div>
+                    <p class="eyebrow">Your chosen self</p>
+                    <h2>The complete look</h2>
+                </div>
+                <button class="close-button" value="cancel" aria-label="Close the look panel">×</button>
+            </div>
+
+            <div class="look-summary" id="look-summary"></div>
+            <p class="prototype-note">Prototype only. No transaction will take place.</p>
         </form>
     </dialog>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
